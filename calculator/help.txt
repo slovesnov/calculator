@@ -1,0 +1,32 @@
+//pow(a,b)+.1e+1
+a=e b=pi
+
+1.18
+[c++] use aslov lib
+
+1.17 8 7 2021
+[c++] added "clear buffer" button
+[c++] source code is formatted by eclipse beautifier
+
+version 1.16 9 sep 2019
+javascript parser changes
+calculator and parser use separate files
+add checking of nonexistent variables. Now parser throws exception even if global variable exists. It's possible to set list of allowable variables
+fixed bug, parser always throws exception. Previous versions sometimes throw string
+
+version 1.15 22 nov 2018
+[c++] recompiled gtk calculator
+
+version 1.14 23 aug 2018
+[c++ parser]
+fixed bug with parsing (213.45-206.75)*27 and 213.45-206.75*27
+calculator isn't recompiled
+
+version 1.13 6 mar 2018
+[c++ calculator]
+add installer
+remove warnings for gcc 7.3.0 version for parser
+code is adopted for gtk 3.22.28 version
+fixed bug with click button function
+[java calculator]
+remove unused output
