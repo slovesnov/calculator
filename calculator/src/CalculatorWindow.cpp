@@ -553,12 +553,3 @@ void CalculatorWindow::aboutDialog() {
 	gtk_widget_destroy(dialog);
 
 }
-
-GtkWidget* CalculatorWindow::image(const char *name) {
-	return gtk_image_new_from_file(getImagePath(name).c_str());
-}
-
-GdkPixbuf* CalculatorWindow::pixbuf(const char *name) {
-	return gdk_pixbuf_new_from_file(getImagePath(name).c_str(), NULL);
-}
-

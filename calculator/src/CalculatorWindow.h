@@ -122,8 +122,6 @@ public:
 	void inputChanged();
 
 	void aboutDialog();
-	static GtkWidget* image(const char *name);
-	static GdkPixbuf* pixbuf(const char *name);
 };
 
 #endif /* CALCULATORWINDOW_H_ */
