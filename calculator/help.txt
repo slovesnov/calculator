@@ -2,7 +2,7 @@
 a=e b=pi
 
 1.18
-[c++] use aslov lib
+[c++] gtk calculator use aslov lib
 
 1.17 8 7 2021
 [c++] added "clear buffer" button
