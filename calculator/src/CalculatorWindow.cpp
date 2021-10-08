@@ -468,13 +468,13 @@ void CalculatorWindow::aboutDialog() {
 
 	hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
 
-	gtk_container_add(GTK_CONTAINER(hbox), image("calculator85.png"));
+	gtk_container_add(GTK_CONTAINER(hbox), image("calculator.png"));
 
 	box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
 
-	const STRING_ENUM STRING_SIZE = STRING_ENUM(-1);
 	STRING_ENUM sid[] = { PROGRAM_VERSION, AUTHOR, COPYRIGHT, HOMEPAGE_STRING,
-			STRING_SIZE /*build info*/
+			CLEAR,/* build info (just use id)*/
+			RECOUNT,/* file size (just use id)*/
 	};
 	STRING_ENUM id;
 	for (i = 0; i < G_N_ELEMENTS(sid); i++) {
@@ -483,7 +483,7 @@ void CalculatorWindow::aboutDialog() {
 			s = format(getLanguageString(id),
 					getLanguageString(SCIENTIFIC_CALCULATOR),
 					CALCULATOR_VERSION);
-		} else if (id == STRING_SIZE) {
+		} else if (id == CLEAR) {
 			for (j = 0; j < G_N_ELEMENTS(MONTH); j++) {
 				if (strncasecmp(__DATE__, MONTH[j], 3) == 0) {
 					break;
@@ -499,6 +499,8 @@ void CalculatorWindow::aboutDialog() {
 							__GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__,
 							GTK_MAJOR_VERSION, GTK_MINOR_VERSION,
 							GTK_MICRO_VERSION);
+		} else if (id == RECOUNT) {
+			s="executable file size "+intToString(getApplicationFileSize(), ',');
 		} else {
 			s = getLanguageString(id);
 
