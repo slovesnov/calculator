@@ -18,8 +18,6 @@ enum {
 const char configFile[] = "calculator.cfg";
 const char HOMEPAGE[] = "http://slovesnov.users.sf.net/?calculator"; //use short name because string is used in about dialog
 const char CERROR[] = "cerror";
-const char *MONTH[] = { "January", "February", "March", "April", "May", "June",
-		"July", "August", "September", "October", "November", "December" };
 const char MAIL[] = "slovesnov@yandex.ru";
 const double CALCULATOR_VERSION = 1.18; //format("%.2lf",)
 const std::string LNG[] = { "en", "ru" };
@@ -209,7 +207,7 @@ CalculatorWindow::CalculatorWindow() {
 	MapStringString::iterator it;
 	if (loadConfig(m)) {
 		if ((it = m.find("language")) != m.end()) {
-			if(stringToInt(it->second, j) && j>=0 && j<SIZEI(LNG) ){
+			if(parseString(it->second, j) && j>=0 && j<SIZEI(LNG) ){
 				m_language=j;
 			}
 		}
@@ -484,23 +482,9 @@ void CalculatorWindow::aboutDialog() {
 					getLanguageString(SCIENTIFIC_CALCULATOR),
 					CALCULATOR_VERSION);
 		} else if (id == CLEAR) {
-			for (j = 0; j < G_N_ELEMENTS(MONTH); j++) {
-				if (strncasecmp(__DATE__, MONTH[j], 3) == 0) {
-					break;
-				}
-			}
-			assert(j<G_N_ELEMENTS(MONTH));
-			//make longer string
-			//__DATE__="Dec 15 2016" we need "15 December 2016"
-			s =
-					format(
-							"build %.*s %s %s %s, gcc version %d.%d.%d, gtk version %d.%d.%d ",
-							2, __DATE__ + 4, MONTH[j], __DATE__ + 7, __TIME__,
-							__GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__,
-							GTK_MAJOR_VERSION, GTK_MINOR_VERSION,
-							GTK_MICRO_VERSION);
+			s =getBuildVersionString(true);
 		} else if (id == RECOUNT) {
-			s="executable file size "+intToString(getApplicationFileSize(), ',');
+			s="executable file size "+toString(getApplicationFileSize(), ',');
 		} else {
 			s = getLanguageString(id);
 

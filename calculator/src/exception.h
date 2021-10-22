@@ -18,16 +18,13 @@ public:
 			std::exception() {
 		m_message = message;
 	}
-	;
 
 	const char* what() const throw () {
 		return m_message.c_str();
 	}
-	;
 
 	~Exception() throw () {
 	}
-	;
 };
 
 class IllegalArgumentException: Exception {
@@ -35,7 +32,6 @@ public:
 	IllegalArgumentException() :
 			Exception("IllegalArgumentException") {
 	}
-	;
 };
 
 #endif
