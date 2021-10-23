@@ -19,11 +19,11 @@ public:
 		m_message = message;
 	}
 
-	const char* what() const throw () {
+	const char* what() const noexcept {
 		return m_message.c_str();
 	}
 
-	~Exception() throw () {
+	~Exception() noexcept {
 	}
 };
 
