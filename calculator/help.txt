@@ -1,8 +1,15 @@
 //pow(a,b)+.1e+1
 a=e b=pi
 
-1.18
-[c++] gtk calculator use aslov lib
+1.18 3 11 2021
+[c++/gtk] adopted for Windows 10
+[c++/gtk] project uses aslov helper library
+[c++] sources added to github
+
+[ru]
+[c++/gtk] адаптировано под Windows 10
+[c++/gtk] проект использует вспомогательную библиотеку aslov
+[c++] исходный код добавлен на github
 
 1.17 8 7 2021
 [c++] added "clear buffer" button
