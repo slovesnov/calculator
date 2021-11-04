@@ -8,10 +8,10 @@
 #ifndef _expressionEstimator_h_
 #define _expressionEstimator_h_
 
-#include <time.h>   // time
+#include <ctime>   // time
 #include <vector>
-#include <string.h> //strchr
-
+#include <cstring> //strchr
+#include <cstdlib> //srand
 #include "node.h"
 #include "exception.h"
 
