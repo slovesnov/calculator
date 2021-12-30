@@ -9,7 +9,7 @@
 #ifndef CALCULATORWINDOW_H_
 #define CALCULATORWINDOW_H_
 
-#include <aslov.h>
+#include "aslov.h"
 
 static const char *languageString[][64] =
 		{ { "clear", "recount", "copy to memory", "add to buffer",
