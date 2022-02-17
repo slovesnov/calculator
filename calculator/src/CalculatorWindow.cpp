@@ -19,7 +19,7 @@ const char configFile[] = "calculator.cfg";
 const char HOMEPAGE[] = "http://slovesnov.users.sf.net/?calculator"; //use short name because string is used in about dialog
 const char CERROR[] = "cerror";
 const char MAIL[] = "slovesnov@yandex.ru";
-const double CALCULATOR_VERSION = 1.19; //format("%.2lf",)
+const double CALCULATOR_VERSION = 1.20; //format("%.2lf",)
 const std::string LNG[] = { "en", "ru" };
 const std::string LANGUAGE[] = { "english", "russian" };
 const std::string CONFIG_TAGS[]={"version","language"};
@@ -75,12 +75,12 @@ void CalculatorWindow::setText(ENTRY_ENUM e, std::string s) {
 }
 
 void CalculatorWindow::inputChanged() {
-	gchar b[128];
-	gchar *p;
 	int i;
+	const char *p;
+	double v;
 	std::string::iterator it, prev, next;
 	bool error = false;
-	std::string s = getText(ENTRY_INPUT);
+	std::string s = getText(ENTRY_INPUT), s1;
 	if (s.length() != 0) {
 		try {
 			if (s.find('#') != std::string::npos) {
@@ -101,14 +101,41 @@ void CalculatorWindow::inputChanged() {
 						"(" + getText(ENTRY_ENUM_ARRAY[i]) + ")");
 			}
 
-			sprintf(b, "%.15lf", ExpressionEstimator::calculate(s.c_str()));
-			for (p = b + strlen(b) - 1; *p == '0'; p--)
-				;
-			if (*p != '.') {
-				p++;
+			v=ExpressionEstimator::calculate(s.c_str());
+			s1 = format("%.15lf", v);
+			i = s1.length();
+			//starts from s1.c_str() + i - 2. -2 because 5.000000000000001 need to skip last digit
+			if(s1[i-2]=='0'){
+				for (p = s1.c_str() + i - 2; *p == '0'; p--)
+					;
+				if (*p != '.') {
+					p++;
+				}
+				s = s1.substr(0, p - s1.c_str());
 			}
-			*p = 0;
-			s = std::string(b, p - b);
+			else if(s1[i-2]=='9'){
+				for (p = s1.c_str() + i - 2; *p == '9'; p--)
+					;
+				if (*p == '.') {
+					//originally was pow(sqrt(12), 2)=11.999999999999998 now make s=12
+					s=std::to_string(int(v)+1);
+				}
+				else{
+					//pow(sqrt(19.99), 2)=19.989999999999998
+					p++;
+					s = s1.substr(0, p - s1.c_str());
+					//originally was 19.989999999999998 now s=19.98 make s=19.99
+					s[s.length()-1]++;
+				}
+			}
+			else if(s1[i-1]=='0'){
+				//just last one zero because s1[i-2]!='0' checked upper
+				//pow(sqrt(1.23945632114677),2)=1.239456321146770
+				s=s1.substr(0,i-1);
+			}
+			else{
+				s=s1;
+			}
 		} catch (Exception &e) {
 			error = true;
 			s = getLanguageString(ERROR);
