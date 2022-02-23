@@ -3,7 +3,7 @@ a=e b=pi
 
 pow(sin(pi/10)*4+1,2)
 
-1.20 4 2 2022
+1.20 17 2 2022
 [c++/gtk] fixed buffer overflow bug if paste big number ex. max_double
 [c++/gtk] add rounding
 [c++/gtk] pow(sqrt(5),2)=5 instead of 5.000000000000001
