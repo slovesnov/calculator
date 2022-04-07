@@ -126,6 +126,9 @@ std::string arraytoString(const double *v, const int arguments) {
 #include <thread>
 
 void f(int t) {
+	auto a=std::hash<std::thread::id>{}(std::this_thread::get_id());
+	printf("%lld\n",a);
+
 	for(int i=0;i<3;i++){
 	printf("t%d %lf\n",t, ExpressionEstimator::calculate("random()"));
 	}

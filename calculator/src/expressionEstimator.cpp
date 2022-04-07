@@ -254,7 +254,7 @@ double ExpressionEstimator::calculate(const char *s) {
 	 * double v1=calculate("random()");
 	 * double v2=calculate("random()");
 	 * need v1 != v2
-	 *
+	 * also need to obtain different numbers for different threads
 	 */
 	ExpressionEstimator estimator(m_c);
 	m_c+=123456;//somehow big number gives big dispersion
