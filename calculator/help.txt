@@ -3,6 +3,20 @@ a=e b=pi
 
 pow(sin(pi/10)*4+1,2)
 
+1.21 7 4 2022 not need to issue new calculator version
+[с++] function ExpressionEstimator::Init() is removed
+[с++] support random() for many threads
+[c++] calculate() function now support std::initializer_list<...> or std::vector<double> arguments so you can call calculate({2,3}) or std::vector<double> v={2,3}; calcualte(v);
+[js] added ExpressionEstimator class so now js parser is done like c++/java parser
+[js] fixed bug with parsing some expressions, for example "sin(c)" ReferenceError: c is not defined
+
+[ru]
+[с++] функция ExpressionEstimator::Init() удалена
+[с++] добавлена поддержка random() для мультизадачности
+[c++] функция calculate() поддерживает аргументы std::initializer_list<...> или std::vector<double>, теперь можно вызывать calculate({2,3}) или std::vector<double> v={2,3}; calcualte(v);
+[js] добавлен класс ExpressionEstimator, теперь js парсер сделан как c++/java парсеры
+[js] исправлен баг при парсинге некоторых выражений, например, "sin(c)" ReferenceError: c is not defined
+
 1.20 17 2 2022
 [c++/gtk] fixed buffer overflow bug if paste big number ex. max_double
 [c++/gtk] add rounding

@@ -27,6 +27,7 @@ class ExpressionEstimator {
 	unsigned m_arguments;
 	Node *m_root;
 	std::vector<Node*> m_vnode;
+	static unsigned m_c;
 
 	inline bool isLetter() {
 		return isalpha(m_expression[m_position]) != 0;
@@ -97,7 +98,7 @@ public:
 	static int totalDestroyed;
 #endif
 
-	ExpressionEstimator() {
+	ExpressionEstimator(unsigned a=0) {
 		m_root = NULL; //don't remove
 
 		//fix eclipse warnings
@@ -105,6 +106,7 @@ public:
 		m_argument = NULL;
 		m_tokenValue = m_argumentSize = m_arguments = 0;
 		m_position = -1;
+		srand(time(NULL)+a);
 	}
 
 	bool compile(const char *expression);
@@ -113,6 +115,10 @@ public:
 		m_argument = x;
 		m_argumentSize = size;
 		return calculate();
+	}
+
+	double calculate(std::vector<double> const&v){
+		return calculate(v.data(),v.size());
 	}
 
 	double calculate();
@@ -126,10 +132,6 @@ public:
 	}
 
 	static double calculate(const char *s);
-
-	inline static void Init() {
-		srand(time(NULL));
-	}
 
 	~ExpressionEstimator();
 };

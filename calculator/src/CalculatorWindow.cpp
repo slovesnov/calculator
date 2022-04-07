@@ -218,7 +218,6 @@ void CalculatorWindow::clickButton(GtkWidget *widget) {
 
 CalculatorWindow::CalculatorWindow() {
 	const int maxw = 85;
-	ExpressionEstimator::Init();
 	pWindow = this;
 
 	int i, j, k, l, m;

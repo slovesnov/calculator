@@ -14,7 +14,7 @@
  */
 #define TYPE 0
 
-#include "ExpressionEstimator.h"
+#include "expressionEstimator.h"
 #include <cstdio>
 #if TYPE==0
 //only for TYPE==0
@@ -29,107 +29,141 @@ int main(int argc, char *argv[]) {
 
 #elif TYPE==1
 
-int main(){
+int main() {
 	try {
-		ExpressionEstimator::Init();
-		double v=ExpressionEstimator::calculate("sin(pi/4)");
-		printf("%lf",v);
-	}catch(Exception& e){
-		printf("%s\n",e.what());
+		double v = ExpressionEstimator::calculate("sin(pi/4)");
+		printf("%lf", v);
+	} catch (Exception &e) {
+		printf("%s\n", e.what());
 	}
-	return 0;
 }
 
 #elif TYPE==2
 
-int main(){
+int main() {
 	try {
-		ExpressionEstimator::Init();
 		ExpressionEstimator estimator;
-		estimator.compile("x0+x1");
+		estimator.compile("x0+2*x1");
 
-		const int arguments=2;
-		const double values[][arguments]={ {3,6}, {8,6} };
-		const int valuesSize=sizeof(values)/sizeof(values[0]);
-		for(int i=0;i<valuesSize;i++){
-			printf("%lf\n", estimator.calculate(values[i],arguments) );
+		printf("%lf\n", estimator.calculate( { 2, 3 }));
+
+		std::vector<double> v = { 1, 2 };
+		printf("%lf\n", estimator.calculate(v));
+
+		const int arguments = 2;
+		const double values[][arguments] = { { 3, 6 }, { 8, 6 } };
+		const int valuesSize = sizeof(values) / sizeof(values[0]);
+		for (int i = 0; i < valuesSize; i++) {
+			printf("%lf\n", estimator.calculate(values[i], arguments));
 		}
-	}catch(Exception& e){
-		printf("%s\n",e.what());
+
+	} catch (Exception &e) {
+		printf("%s\n", e.what());
 	}
-	return 0;
 }
 
 #elif TYPE==3
 
-std::string arraytoString(const double *v,const int arguments){
-	std::string s="[";
-	char buff[32];
-	for(int i=0;i<arguments;i++){
+std::string arraytoString(const double *v, const int arguments) {
+	std::string s = "[";
+	char buff[1024];
+	for (int i = 0; i < arguments; i++) {
 		sprintf(buff, "%lf", v[i]);
-		s+=buff;
-		s+= i==arguments-1 ? "]" : ", " ;
+		s += buff;
+		s += i == arguments - 1 ? "]" : ", ";
 	}
 	return s;
 }
 
-int main(){
-	ExpressionEstimator::Init();
+int main() {
 	ExpressionEstimator estimator;
 	int i;
-	const char*s;
-	const char* expression[]={"sin(pi/4)","1+2+"};
-	const int expressionSize=sizeof(expression)/sizeof(expression[0]);
-	for(i=0;i<expressionSize;i++){
-		s=expression[i];
-		printf("\"%s\"=",s);
+	const char *s;
+	const char *expression[] = { "sin(pi/4)", "1+2+" };
+	const int expressionSize = sizeof(expression) / sizeof(expression[0]);
+	for (i = 0; i < expressionSize; i++) {
+		s = expression[i];
+		printf("\"%s\" = ", s);
 		try {
-			printf("%lf\n",ExpressionEstimator::calculate(s));
-		} catch (Exception& e) {
-			printf("%s\n",e.what());
+			printf("%lf\n", ExpressionEstimator::calculate(s));
+		} catch (Exception &e) {
+			printf("%s\n", e.what());
 		}
 	}
 
-  const char* expression1[]={"3*x0+2*x1*x0","6*x0"};
+	const char *expression1[] = { "3*x0+2*x1*x0", "6*x0" };
 
-	const int arguments=2;
-	const double values[][arguments]={ {3,6}, {8,6} };
-	const int valuesSize=sizeof(values)/sizeof(values[0]);
+	const int arguments = 2;
+	const double values[][arguments] = { { 3, 6 }, { 8, 6 } };
+	const int valuesSize = sizeof(values) / sizeof(values[0]);
 
-	const double*v;
-	for(i=0;i<valuesSize;i++){
-		v=values[i];
-		s=expression1[i];
-		printf("\"%s\"%s=",s,arraytoString(v,arguments).c_str());
+	const double *v;
+	for (i = 0; i < valuesSize; i++) {
+		v = values[i];
+		s = expression1[i];
+		printf("\"%s\"%s = ", s, arraytoString(v, arguments).c_str());
 		try {
 			estimator.compile(s);
-			printf("%lf\n",estimator.calculate(v,arguments));
-		} catch (Exception& e) {
-			printf("%s\n",e.what());
+			printf("%lf\n", estimator.calculate(v, arguments));
+		} catch (Exception &e) {
+			printf("%s\n", e.what());
 		}
 	}
-
-	return 0;
 }
 #else
-int main(){
-	ExpressionEstimator::Init();
-	ExpressionEstimator estimator;
+
+std::string arraytoString(const double *v, const int arguments) {
+	std::string s = "[";
+	char buff[1024];
+	for (int i = 0; i < arguments; i++) {
+		sprintf(buff, "%lf", v[i]);
+		s += buff;
+		s += i == arguments - 1 ? "]" : ", ";
+	}
+	return s;
+}
+
+#include <thread>
+
+void f(int t) {
+	for(int i=0;i<3;i++){
+	printf("t%d %lf\n",t, ExpressionEstimator::calculate("random()"));
+	}
+}
+
+int main() {
+	int cores=3;
 	int i;
-	const char*s;
-	const char* expression[]={"(213.45-206.75)*2","213.45-206.75*27"};
-	const int expressionSize=sizeof(expression)/sizeof(expression[0]);
-	for(i=0;i<expressionSize;i++){
-		s=expression[i];
-		printf("\"%s\"=",s);
-		try {
-			printf("%lf\n",ExpressionEstimator::calculate(s));
-		} catch (Exception& e) {
-			printf("%s\n",e.what());
-		}
+	std::vector<std::thread> vt;
+
+	for (i = 0; i < cores; ++i) {
+		vt.push_back(std::thread(f, i));
 	}
 
-	return 0;
+	for (auto& a : vt){
+		a.join();
+	}
+	printf("\n");
+
+	ExpressionEstimator estimator;
+	const int arguments = 2;
+	const double v[arguments] = { 3, 6 };
+
+	for(i=0;i<3;i++){
+		printf("%lf\n", ExpressionEstimator::calculate("random()"));
+	}
+
+	printf("\n");
+	estimator.compile("random()+x0+x1");
+
+	try {
+		for(i=0;i<3;i++){
+			printf("%lf\n", estimator.calculate(v, arguments));
+		}
+	} catch (Exception &e) {
+		printf("%s\n", e.what());
+	}
+
 }
 
 #endif

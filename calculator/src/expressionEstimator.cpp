@@ -27,6 +27,8 @@ const char *OPERATOR[] = { "PLUS", "MINUS", "MULTIPLY", "DIVIDE",
 	int	ExpressionEstimator::totalCreated=0;
 #endif
 
+unsigned ExpressionEstimator::m_c=0;
+
 int ExpressionEstimator::getIndex(const char *a[], const char *v) {
 	const char *n;
 	int i;
@@ -248,7 +250,14 @@ double ExpressionEstimator::calculate() {
 }
 
 double ExpressionEstimator::calculate(const char *s) {
-	ExpressionEstimator estimator = ExpressionEstimator();
+	/* uses m_c to avoid same results returns by
+	 * double v1=calculate("random()");
+	 * double v2=calculate("random()");
+	 * need v1 != v2
+	 *
+	 */
+	ExpressionEstimator estimator(m_c);
+	m_c+=123456;//somehow big number gives big dispersion
 	estimator.compile(s);
 	estimator.m_argument = NULL; //clear all arguments
 	return estimator.calculate();
