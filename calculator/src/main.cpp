@@ -133,7 +133,7 @@ void f(int t) {
 
 int main() {
 	int cores=3;
-	int i;
+	int i,j;
 	std::vector<std::thread> vt;
 
 	for (i = 0; i < cores; ++i) {
@@ -145,7 +145,6 @@ int main() {
 	}
 	printf("\n");
 
-	ExpressionEstimator estimator;
 	const int arguments = 2;
 	const double v[arguments] = { 3, 6 };
 
@@ -154,11 +153,16 @@ int main() {
 	}
 
 	printf("\n");
-	estimator.compile("random()+x0+x1");
+	ExpressionEstimator estimator[2];
+	for(j=0;j<2;j++){
+		estimator[j].compile("random()+x0+x1");
+	}
 
 	try {
-		for(i=0;i<3;i++){
-			printf("%lf\n", estimator.calculate(v, arguments));
+		for(j=0;j<2;j++){
+			for(i=0;i<3;i++){
+				printf("%d %d %lf\n",i,j, estimator[j].calculate(v, arguments));
+			}
 		}
 	} catch (Exception &e) {
 		printf("%s\n", e.what());

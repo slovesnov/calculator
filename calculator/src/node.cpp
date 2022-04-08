@@ -129,7 +129,8 @@ double Node::calculate() {
 		return log(1 / x + sqrt(1 + x * x) / fabs(x));
 
 	case RANDOM:
-		return double(rand()) / RAND_MAX;
+		//rand() is not thread safe todo
+		return double(rand()) / (RAND_MAX + 1);
 
 	case CEIL:
 		return ceil(m_left->calculate());

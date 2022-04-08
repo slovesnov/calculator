@@ -100,13 +100,14 @@ public:
 
 	ExpressionEstimator(unsigned a=0) {
 		m_root = NULL; //don't remove
+		//printf("srand%d\n",unsigned(time(NULL)+a));
+		srand(time(NULL)+a);
 
 		//fix eclipse warnings
 		m_operator = END;
 		m_argument = NULL;
 		m_tokenValue = m_argumentSize = m_arguments = 0;
 		m_position = -1;
-		srand(time(NULL)+a);
 	}
 
 	bool compile(const char *expression);
