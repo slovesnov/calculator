@@ -9,6 +9,8 @@ pow(sin(pi/10)*4+1,2)
 [c++] calculate() function now support std::initializer_list<...> or std::vector<double> arguments so you can call calculate({2,3}) or std::vector<double> v={2,3}; calcualte(v);
 [js] added ExpressionEstimator class so now js parser is done like c++/java parser
 [js] fixed bug with parsing some expressions, for example "sin(c)" ReferenceError: c is not defined
+[js] fixed bug with 'random()' in formulas now always returs different values
+[js] fixed bug with formulas where function without parameters is defined, for example 'random' now always throw exception
 
 [ru]
 [с++] функция ExpressionEstimator::Init() удалена
@@ -16,6 +18,8 @@ pow(sin(pi/10)*4+1,2)
 [c++] функция calculate() поддерживает аргументы std::initializer_list<...> или std::vector<double>, теперь можно вызывать calculate({2,3}) или std::vector<double> v={2,3}; calcualte(v);
 [js] добавлен класс ExpressionEstimator, теперь js парсер сделан как c++/java парсеры
 [js] исправлен баг при парсинге некоторых выражений, например, "sin(c)" ReferenceError: c is not defined
+[js] исправлен баг с функцией 'random()' в формулах, теперь всегда возвращаются разные значения
+[js] исправлен баг с формулами где задана функция без параметров, например, 'random' теперь всегда вызывается исключение
 
 1.20 17 2 2022
 [c++/gtk] fixed buffer overflow bug if paste big number ex. max_double
