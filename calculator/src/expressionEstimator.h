@@ -37,7 +37,7 @@ class ExpressionEstimator {
 		return isdigit(m_expression[m_position]) != 0;
 	}
 
-	inline bool isDigit(char c) {
+	inline static bool isDigit(char c) {
 		return isdigit(c) != 0;
 	}
 
@@ -104,23 +104,117 @@ public:
 		srand(time(NULL)+a);
 
 		//fix eclipse warnings
-		m_operator = END;
-		m_argument = NULL;
-		m_tokenValue = m_argumentSize = m_arguments = 0;
-		m_position = -1;
+//		m_operator = END;
+//		m_argument = NULL;
+//		m_tokenValue = m_argumentSize = m_arguments = 0;
+//		m_position = -1;
+	}
+
+	ExpressionEstimator(const char *s):ExpressionEstimator(){
+		try{
+			compile(s);
+		}
+		catch(Exception& e){
+			clear();
+			throw;
+		}
+	}
+
+	ExpressionEstimator(std::string const & s) : ExpressionEstimator(s.c_str()){
 	}
 
 	bool compile(const char *expression);
+	bool compile(const std::string &expression) {
+		return compile(expression.c_str());
+	}
 
-	inline double calculate(const double x[], int size) {
+	double calculate(const double *x, const unsigned long long size) {
 		m_argument = x;
 		m_argumentSize = size;
 		return calculate();
 	}
 
-	double calculate(std::vector<double> const&v){
-		return calculate(v.data(),v.size());
+	double calculate(double *x, const unsigned long long size) {
+		m_argument = x;
+		m_argumentSize = size;
+		return calculate();
 	}
+
+	double calculate(const double *x, const int size) {
+		m_argument = x;
+		m_argumentSize = size;
+		return calculate();
+	}
+
+	double calculate(double *x, const int size) {
+		m_argument = x;
+		m_argumentSize = size;
+		return calculate();
+	}
+
+	double calculate(std::initializer_list<double> const &v) {
+		return calculate(v.begin(), v.size());
+	}
+
+	double calculate(std::vector<double> const &v) {
+		return calculate(v.data(), v.size());
+	}
+
+	template <typename...A>
+	double calculate(A...a){
+		std::vector<double> v={std::forward<double>(a)...};
+		return calculate(v);
+	}
+
+/*
+	double calculate(const double *x, const unsigned long long size) {
+		m_argument = x;
+		m_argumentSize = size;
+		return calculate();
+	}
+
+	double calculate(double *x, const unsigned long long size) {
+		m_argument = x;
+		m_argumentSize = size;
+		return calculate();
+	}
+
+	double calculate(const double *x, const int size) {
+		m_argument = x;
+		m_argumentSize = size;
+		return calculate();
+	}
+
+	double calculate(double *x, const int size) {
+		m_argument = x;
+		m_argumentSize = size;
+		return calculate();
+	}
+*/
+/*
+	double calculate(std::initializer_list<double> const &v) {
+		return calculate(v.begin(), v.size());
+	}
+
+	double calculate(std::vector<double> const &v) {
+		return calculate(v.data(), v.size());
+	}
+
+	template <typename A,typename B>
+	double calculate(A a,B b){
+		if( (std::is_same<A,double*>::value || std::is_same<A,const double*>::value) &&
+				(std::is_same<B,unsigned long long>::value)
+				){
+			m_argument = a;
+			m_argumentSize = b;
+			return calculate();
+		}
+		else{
+			std::vector<double> v={std::forward<double>(a),std::forward<double>(b)};
+			return calculate(v);
+		}
+	}
+*/
 
 	double calculate();
 
@@ -133,6 +227,9 @@ public:
 	}
 
 	static double calculate(const char *s);
+	static double calculate(std::string const & s){
+		return calculate(s.c_str());
+	}
 
 	~ExpressionEstimator();
 };
