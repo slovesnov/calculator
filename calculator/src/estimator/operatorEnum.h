@@ -14,7 +14,7 @@
  Functions from SIN to MAX (should go in a row), first function should be SIN, last should be MAX
  POW,ATAN2,MIN,MAX should go in a row see parse3 function
  */
-enum OPERATOR_ENUM {
+enum class OPERATOR_ENUM {
 	PLUS,
 	MINUS,
 	MULTIPLY,

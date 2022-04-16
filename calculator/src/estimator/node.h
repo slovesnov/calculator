@@ -12,7 +12,6 @@
 #include <cmath>/*floor*/
 
 #include "operatorEnum.h"
-#include "exception.h"
 
 class ExpressionEstimator;
 

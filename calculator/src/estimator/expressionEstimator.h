@@ -11,9 +11,11 @@
 #include <ctime>   // time
 #include <vector>
 #include <cstring> //strchr
+#include <string>
 #include <cstdlib> //srand
+#include <stdexcept>
+
 #include "node.h"
-#include "exception.h"
 
 class ExpressionEstimator {
 	friend class Node;
@@ -77,12 +79,12 @@ class ExpressionEstimator {
 	}
 
 	inline void checkBracketBalance(OPERATOR_ENUM open) {
-		if ((open == LEFT_BRACKET && m_operator != RIGHT_BRACKET)
-				|| (open == LEFT_SQUARE_BRACKET
-						&& m_operator != RIGHT_SQUARE_BRACKET)
-				|| (open == LEFT_CURLY_BRACKET
-						&& m_operator != RIGHT_CURLY_BRACKET)) {
-			throw Exception(
+		if ((open == OPERATOR_ENUM::LEFT_BRACKET && m_operator != OPERATOR_ENUM::RIGHT_BRACKET)
+				|| (open == OPERATOR_ENUM::LEFT_SQUARE_BRACKET
+						&& m_operator != OPERATOR_ENUM::RIGHT_SQUARE_BRACKET)
+				|| (open == OPERATOR_ENUM::LEFT_CURLY_BRACKET
+						&& m_operator != OPERATOR_ENUM::RIGHT_CURLY_BRACKET)) {
+			throw std::runtime_error(
 					"close bracket expected or another type of close bracket");
 		}
 	}
@@ -110,55 +112,105 @@ public:
 //		m_position = -1;
 	}
 
-	ExpressionEstimator(const char *s):ExpressionEstimator(){
+
+	template<typename ...A>
+	ExpressionEstimator(const std::string &expression, A ...a) {
+		std::vector<std::string> v = { std::forward<std::string>(a)... };
 		try{
-			compile(s);
+			compile(expression,v);
 		}
-		catch(Exception& e){
+		catch(std::exception& e){
 			clear();
 			throw;
 		}
 	}
 
-	ExpressionEstimator(std::string const & s) : ExpressionEstimator(s.c_str()){
+	ExpressionEstimator(const std::string &expression,
+			std::vector<std::string> const &v):ExpressionEstimator(){
+		try{
+			compile(expression,v);
+		}
+		catch(std::exception& e){
+			clear();
+			throw;
+		}
 	}
 
-	bool compile(const char *expression);
-	bool compile(const std::string &expression) {
-		return compile(expression.c_str());
+	ExpressionEstimator(const std::string &expression,
+			std::initializer_list<std::string> const &v):ExpressionEstimator() {
+		try{
+			compile(expression,std::vector<std::string>( v));
+		}
+		catch(std::exception& e){
+			clear();
+			throw;
+		}
+	}
+	ExpressionEstimator(const std::string &expression, const std::string *x,
+			const int size):ExpressionEstimator() {
+		try{
+			compile(expression,std::vector<std::string>(x, x + size));
+		}
+		catch(std::exception& e){
+			clear();
+			throw;
+		}
+	}
+	ExpressionEstimator(const std::string &expression, std::string *x,
+			const int size):ExpressionEstimator() {
+		try{
+			compile(expression,std::vector<std::string>(x, x + size));
+		}
+		catch(std::exception& e){
+			clear();
+			throw;
+		}
 	}
 
-	double calculate(const double *x, const unsigned long long size) {
-		m_argument = x;
-		m_argumentSize = size;
-		return calculate();
+	ExpressionEstimator(const char *expression):ExpressionEstimator(){
+		try{
+			compile(expression);
+		}
+		catch(std::exception& e){
+			clear();
+			throw;
+		}
 	}
 
-	double calculate(double *x, const unsigned long long size) {
-		m_argument = x;
-		m_argumentSize = size;
-		return calculate();
+	ExpressionEstimator(std::string const & expression) : ExpressionEstimator(expression.c_str()){
 	}
 
-	double calculate(const double *x, const int size) {
-		m_argument = x;
-		m_argumentSize = size;
-		return calculate();
+	void compile(const char *expression);
+	void compile(const std::string &expression) {
+		compile(expression.c_str());
 	}
 
-	double calculate(double *x, const int size) {
-		m_argument = x;
-		m_argumentSize = size;
-		return calculate();
+	/*compile with variable list*/
+	template<typename ...A>
+	void compile(const std::string &expression, A ...a) {
+		std::vector<std::string> v = { std::forward<std::string>(a)... };
+		compile(expression, v);
+	}
+	void compile(const std::string &expression,
+			std::vector<std::string> const &v);
+
+	void compile(const std::string &expression,
+			std::initializer_list<std::string> const &v) {
+		compile(expression, std::vector<std::string> { v });
+	}
+	void compile(const char* expression,
+			std::initializer_list<std::string> const &v) {
+		compile(expression, std::vector<std::string> { v });
+	}
+	void compile(const std::string &expression, const std::string *x,
+			const int size) {
+		compile(expression, std::vector<std::string>(x, x + size) );
+	}
+	void compile(const std::string &expression, std::string *x,
+			const int size) {
+		compile(expression, std::vector<std::string>(x, x + size) );
 	}
 
-	double calculate(std::initializer_list<double> const &v) {
-		return calculate(v.begin(), v.size());
-	}
-
-	double calculate(std::vector<double> const &v) {
-		return calculate(v.data(), v.size());
-	}
 
 	template <typename...A>
 	double calculate(A...a){
@@ -166,17 +218,12 @@ public:
 		return calculate(v);
 	}
 
-/*
-	double calculate(const double *x, const unsigned long long size) {
-		m_argument = x;
-		m_argumentSize = size;
-		return calculate();
+	double calculate(std::vector<double> const &v) {
+		return calculate( (const double *)v.data(), int(v.size()));
 	}
 
-	double calculate(double *x, const unsigned long long size) {
-		m_argument = x;
-		m_argumentSize = size;
-		return calculate();
+	double calculate(std::initializer_list<double> const &v) {
+		return calculate(std::vector<double>{v});
 	}
 
 	double calculate(const double *x, const int size) {
@@ -190,31 +237,6 @@ public:
 		m_argumentSize = size;
 		return calculate();
 	}
-*/
-/*
-	double calculate(std::initializer_list<double> const &v) {
-		return calculate(v.begin(), v.size());
-	}
-
-	double calculate(std::vector<double> const &v) {
-		return calculate(v.data(), v.size());
-	}
-
-	template <typename A,typename B>
-	double calculate(A a,B b){
-		if( (std::is_same<A,double*>::value || std::is_same<A,const double*>::value) &&
-				(std::is_same<B,unsigned long long>::value)
-				){
-			m_argument = a;
-			m_argumentSize = b;
-			return calculate();
-		}
-		else{
-			std::vector<double> v={std::forward<double>(a),std::forward<double>(b)};
-			return calculate(v);
-		}
-	}
-*/
 
 	double calculate();
 

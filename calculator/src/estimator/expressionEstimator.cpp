@@ -5,7 +5,8 @@
  All rights reserved.
  ******************************************************/
 
-#include "exception.h"
+#include <regex>
+#include <algorithm>
 #include "expressionEstimator.h"
 
 const char *CONSTANT_NAME[] = { "PI", "E", "SQRT2", "SQRT1_2", "LN2", "LN10",
@@ -22,6 +23,19 @@ const char *OPERATOR[] = { "PLUS", "MINUS", "MULTIPLY", "DIVIDE",
 		"CEIL", "FLOOR", "ROUND", "ABS", "EXP", "LOG", "SQRT", "POW", "ATAN2",
 		"MIN", "MAX", "X", "NUMBER", "UNARY_MINUS", "END", NULL };
 
+
+const std::string reservedWords[] = { "exp", "log", "pow", "sqrt", "abs",
+		"random", "min", "max", "pi", "e", "sqrt2", "sqrt1_2", "ln2", "ln10",
+		"log2e", "log10e", "sin", "cos", "tan", "cot", "sec", "csc", "asin",
+		"acos", "atan", "acot", "asec", "acsc", "sinh", "cosh", "tanh", "coth",
+		"sech", "csch", "asinh", "acosh", "atanh", "acoth", "asech", "acsch",
+		"ceil", "floor", "round", "atan2" };
+
+
+static std::regex bregex(std::string const& s){
+	return std::regex("\\b"+s+"\\b");
+}
+
 #ifdef _DEBUG
 	int	ExpressionEstimator::totalDestroyed=0;
 	int	ExpressionEstimator::totalCreated=0;
@@ -37,7 +51,7 @@ int ExpressionEstimator::getIndex(const char *a[], const char *v) {
 			return i;
 		}
 	}
-	throw IllegalArgumentException();
+	throw std::invalid_argument("invalid argument exception");
 }
 
 void ExpressionEstimator::getToken() {
@@ -46,7 +60,7 @@ void ExpressionEstimator::getToken() {
 	const char T[] = "+-*/()[]{},";
 
 	if (m_position == m_expression.length()) {
-		m_operator = END;
+		m_operator = OPERATOR_ENUM::END;
 	} else if ((c = strchr(T, m_expression[m_position])) != NULL) {
 		m_position++;
 		m_operator = (OPERATOR_ENUM) (c - T);
@@ -59,33 +73,33 @@ void ExpressionEstimator::getToken() {
 
 		try {
 			if (token[0] == 'X' && token.length() == 1) {
-				throw Exception("unknown keyword");
+				throw std::runtime_error("unknown keyword");
 			} else if (token[0] == 'X' && token.length() > 1
 					&& isDigit(token[1])) {
 				i = unsigned(atoi(token.c_str() + 1));
 				if (m_arguments < i + 1) {
 					m_arguments = i + 1;
 				}
-				m_operator = X;
+				m_operator = OPERATOR_ENUM::X;
 				m_tokenValue = i;
 			} else {
 				m_operator = (OPERATOR_ENUM) getIndex(OPERATOR, token.c_str());
-				i = m_operator;
-				if (i < SIN || i > MAX) {
-					throw IllegalArgumentException();
+				i = unsigned(m_operator);
+				if (i < unsigned(OPERATOR_ENUM::SIN) || i > unsigned(OPERATOR_ENUM::MAX)) {
+					throw std::invalid_argument("invalid argument exception");
 				}
 			}
-		} catch (IllegalArgumentException &e1) {
+		} catch (std::invalid_argument &e1) {
 			try {
 				m_tokenValue = CONSTANT_VALUE[getIndex(CONSTANT_NAME,
 						token.c_str())];
-				m_operator = NUMBER;
-			} catch (IllegalArgumentException &e2) {
-				throw Exception("unknown keyword");
+				m_operator = OPERATOR_ENUM::NUMBER;
+			} catch (std::invalid_argument &e2) {
+				throw std::runtime_error("unknown keyword");
 			}
 		}
 	} else if (isDigit() || isPoint()) {
-		m_operator = NUMBER;
+		m_operator = OPERATOR_ENUM::NUMBER;
 		/*21aug2018 version 1.14 fixed bug with parsing (213.45-206.75)*2 and 213.45-206.75*27
 		 cann't use const char*p=m_expression.substr(m_position).c_str(); 
 		 because local string is created and destroyed, so use 
@@ -96,12 +110,12 @@ void ExpressionEstimator::getToken() {
 		m_tokenValue = strtod(p, &pEnd);
 		m_position += pEnd - p;
 	} else {
-		throw Exception("unknown symbol");
+		throw std::runtime_error("unknown symbol");
 	}
 
 }
 
-bool ExpressionEstimator::compile(const char *expression) {
+void ExpressionEstimator::compile(const char *expression) {
 	m_position = 0;
 	m_arguments = 0;
 	m_expression = "";
@@ -122,28 +136,26 @@ bool ExpressionEstimator::compile(const char *expression) {
 	}
 
 	getToken();
-	if (m_operator == END) {
-		throw Exception("unexpected end of expression");
+	if (m_operator == OPERATOR_ENUM::END) {
+		throw std::runtime_error("unexpected end of expression");
 	}
 	m_root = parse();
-	if (m_operator != END) {
-		throw Exception("end of expression expected");
+	if (m_operator != OPERATOR_ENUM::END) {
+		throw std::runtime_error("end of expression expected");
 	}
 
 	//return original locale
 	setlocale(LC_ALL, lorig);
 	free((void*) lorig);
-
-	return true;
 }
 
 Node* ExpressionEstimator::parse() {
 	Node *node = parse1();
-	while (m_operator == PLUS || m_operator == MINUS) {
+	while (m_operator == OPERATOR_ENUM::PLUS || m_operator == OPERATOR_ENUM::MINUS) {
 		node = createNode(m_operator, node);
 		getToken();
-		if (m_operator == PLUS || m_operator == MINUS) {
-			throw Exception("two operators in a row");
+		if (m_operator == OPERATOR_ENUM::PLUS || m_operator == OPERATOR_ENUM::MINUS) {
+			throw std::runtime_error("two operators in a row");
 		}
 		node->m_right = parse1();
 	}
@@ -152,11 +164,11 @@ Node* ExpressionEstimator::parse() {
 
 Node* ExpressionEstimator::parse1() {
 	Node *node = parse2();
-	while (m_operator == MULTIPLY || m_operator == DIVIDE) {
+	while (m_operator == OPERATOR_ENUM::MULTIPLY || m_operator == OPERATOR_ENUM::DIVIDE) {
 		node = createNode(m_operator, node);
 		getToken();
-		if (m_operator == PLUS || m_operator == MINUS) {
-			throw Exception("two operators in a row");
+		if (m_operator == OPERATOR_ENUM::PLUS || m_operator == OPERATOR_ENUM::MINUS) {
+			throw std::runtime_error("two operators in a row");
 		}
 		node->m_right = parse2();
 	}
@@ -165,11 +177,11 @@ Node* ExpressionEstimator::parse1() {
 
 Node* ExpressionEstimator::parse2() {
 	Node *node;
-	if (m_operator == MINUS) {
+	if (m_operator == OPERATOR_ENUM::MINUS) {
 		getToken();
-		node = createNode(UNARY_MINUS, parse3());
+		node = createNode(OPERATOR_ENUM::UNARY_MINUS, parse3());
 	} else {
-		if (m_operator == PLUS) {
+		if (m_operator == OPERATOR_ENUM::PLUS) {
 			getToken();
 		}
 		node = parse3();
@@ -181,20 +193,20 @@ Node* ExpressionEstimator::parse3() {
 	Node *node;
 	OPERATOR_ENUM open;
 
-	if (m_operator >= SIN && m_operator <= MAX) {
+	if (m_operator >= OPERATOR_ENUM::SIN && m_operator <= OPERATOR_ENUM::MAX) {
 		int arguments;
-		if (m_operator >= POW && m_operator <= MAX) {
+		if (m_operator >= OPERATOR_ENUM::POW && m_operator <= OPERATOR_ENUM::MAX) {
 			arguments = 2;
 		} else {
-			arguments = m_operator == RANDOM ? 0 : 1;
+			arguments = m_operator == OPERATOR_ENUM::RANDOM ? 0 : 1;
 		}
 
 		node = createNode(m_operator);
 		getToken();
 		open = m_operator;
-		if (m_operator != LEFT_BRACKET && m_operator != LEFT_SQUARE_BRACKET
-				&& m_operator != LEFT_CURLY_BRACKET) {
-			throw Exception("open bracket expected");
+		if (m_operator != OPERATOR_ENUM::LEFT_BRACKET && m_operator != OPERATOR_ENUM::LEFT_SQUARE_BRACKET
+				&& m_operator != OPERATOR_ENUM::LEFT_CURLY_BRACKET) {
+			throw std::runtime_error("open bracket expected");
 		}
 		getToken();
 
@@ -202,8 +214,8 @@ Node* ExpressionEstimator::parse3() {
 			node->m_left = parse();
 
 			if (arguments == 2) {
-				if (m_operator != COMMA) {
-					throw Exception("comma expected");
+				if (m_operator != OPERATOR_ENUM::COMMA) {
+					throw std::runtime_error("comma expected");
 				}
 				getToken();
 				node->m_right = parse();
@@ -213,14 +225,14 @@ Node* ExpressionEstimator::parse3() {
 	} else {
 		switch (m_operator) {
 
-		case X:
-		case NUMBER:
+		case OPERATOR_ENUM::X:
+		case OPERATOR_ENUM::NUMBER:
 			node = createNode(m_operator, m_tokenValue);
 			break;
 
-		case LEFT_BRACKET:
-		case LEFT_SQUARE_BRACKET:
-		case LEFT_CURLY_BRACKET:
+		case OPERATOR_ENUM::LEFT_BRACKET:
+		case OPERATOR_ENUM::LEFT_SQUARE_BRACKET:
+		case OPERATOR_ENUM::LEFT_CURLY_BRACKET:
 			open = m_operator;
 			getToken();
 			node = parse();
@@ -228,7 +240,7 @@ Node* ExpressionEstimator::parse3() {
 			break;
 
 		default:
-			throw Exception("unexpected operator");
+			throw std::runtime_error("unexpected operator");
 		}
 
 	}
@@ -238,13 +250,13 @@ Node* ExpressionEstimator::parse3() {
 
 double ExpressionEstimator::calculate() {
 	if (m_root == NULL) {
-		throw Exception("using of calculate() without compile()");
+		throw std::runtime_error("using of calculate() without compile()");
 	}
 
 	unsigned length = m_argument == NULL ? 0 : m_argumentSize;
 
 	if (length != m_arguments) {
-		throw Exception("invalid number of expression arguments");
+		throw std::runtime_error("invalid number of expression arguments");
 	}
 	return m_root->calculate();
 }
@@ -281,3 +293,59 @@ void ExpressionEstimator::clear() {
 ExpressionEstimator::~ExpressionEstimator() {
 	clear();
 }
+
+void ExpressionEstimator::compile(const std::string &expression,std::vector<std::string> const &variables){
+	int i;
+	std::string s, q,e = expression;
+	std::vector<std::string> v;
+	const char r = '0';//should be \w because use \b in regex replace
+
+	v=variables;
+
+	std::sort(v.begin(),v.end());
+	i=0;
+	for (auto &a : v) {
+		s=a;
+		std::transform(s.begin(), s.end(), s.begin(), ::tolower);
+		if (std::find(begin(reservedWords), end(reservedWords), s)
+				!= end(reservedWords)) {
+			throw std::runtime_error(
+					"reserved word \"" + a + "\" is used as variable");
+		}
+		//also check empty
+		if (!std::regex_search(a, std::regex("^_*[A-Za-z]\\w*$") )) {
+			throw std::runtime_error(
+					std::string("invalid variable name \"") + a + "\"");
+		}
+		if (i > 0 && a == v[i-1]) {
+			throw std::runtime_error(
+					std::string("repeated variable \"") + a + "\" in list");
+		}
+		i++;
+	}
+
+	v=variables;
+	for (auto &a : v) {
+		if(std::regex_search(a, std::regex("^[xX]\\d+$"))){
+			e = std::regex_replace(e, bregex( a ), r+a);
+			a=r+a;
+		}
+	}
+
+	std::smatch sm;
+	s=e;
+	i=0;
+	for (auto &a : v) {
+		q = std::to_string(i);
+		if (std::regex_search(e, sm,bregex( "[xX]"+q ))) {
+			throw std::runtime_error("unknown variable " + sm.str());
+		}
+		s = std::regex_replace(s, bregex( a ),"x"+q);
+		i++;
+	}
+
+//	printf("%s 348\n",s.c_str());
+	compile(s);
+	m_arguments=v.size();
+}
+

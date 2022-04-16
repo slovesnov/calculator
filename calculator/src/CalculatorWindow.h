@@ -11,7 +11,7 @@
 
 #include "aslov.h"
 
-static const char *languageString[][64] =
+static VString languageString[] =
 		{ { "clear", "recount", "copy to memory", "add to buffer",
 				"clear buffer", "expression", "result", "common functions",
 				"constants", "trigonometric functions", "hyperbolic function",
@@ -72,7 +72,7 @@ enum ENTRY_ENUM {
 const ENTRY_ENUM ENTRY_ENUM_ARRAY[] = { ENTRY_INPUT, ENTRY_RESULT, ENTRY_MEMORY,
 		ENTRY_BUFFER, ENTRY_A, ENTRY_B, ENTRY_C, ENTRY_D };
 
-static const char *lexer[][12] = { { "exp()", "log()", "pow(,)", "sqrt()",
+static VString lexer[] = { { "exp()", "log()", "pow(,)", "sqrt()",
 		"abs()", "random()", "min(,)", "max(,)" }, { "pi", "e", "sqrt2",
 		"sqrt1_2", "ln2", "ln10", "log2e", "log10e" }, { "sin()", "cos()",
 		"tan()", "cot()", "sec()", "csc()", "asin()", "acos()", "atan()",
@@ -91,17 +91,15 @@ class CalculatorWindow {
 	GtkWidget *m_aboutButton;
 	GtkWidget *m_label[SIZE(LABEL)];
 	GtkWidget *m_entry[SIZE(ENTRY_ENUM_ARRAY)];
-	GtkWidget **m_functionButton;
+	std::vector<GtkWidget*> m_functionButton;
 	int m_language;
 
 	const gchar* getLanguageString(STRING_ENUM e) {
-		const char *p = languageString[m_language][e];
-		return g_locale_to_utf8(p, strlen(p), NULL, NULL, NULL);
+		return g_locale_to_utf8(languageString[m_language][e].c_str(), -1, NULL, NULL, NULL);
 	}
 
 	void addItemToTable(GtkWidget *table, GtkWidget *w, int row, int column);
 	GtkTreeModel* createModel();
-	static unsigned countLexer(int index);
 	static unsigned countArguments(const char *function);
 
 	void updateLanguage();

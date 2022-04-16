@@ -6,20 +6,21 @@
  ******************************************************/
 
 /*
- * TYPE 0 - calculator (under GTK+)
+ * TYPE -1 - calculator (under GTK+)
+ * TYPE 0 - testFormWindow (under GTK+)
  * TYPE 1 - sample1
  * TYPE 2 - sample2
  * TYPE 3 - sample3
  * TYPE 4 - sample4 random() & threads
  * else   - sample5
  */
-#define TYPE 2
+#define TYPE 0
 
-#include "expressionEstimator.h"
-
-#if TYPE!=0
+#if TYPE>1
 #include <iostream>
 #include <sstream>
+
+#include "estimator/expressionEstimator.h"
 
 std::string vectorToString(const std::vector<double> &v) {
 	std::stringstream ss;
@@ -33,9 +34,7 @@ std::string vectorToString(const std::vector<double> &v) {
 }
 #endif
 
-#if TYPE==0
-//only for TYPE==0
-#include "aslov.h"
+#if TYPE==-1
 #include "CalculatorWindow.h"
 
 int main(int argc, char *argv[]) {
@@ -44,13 +43,22 @@ int main(int argc, char *argv[]) {
 	CalculatorWindow c;
 }
 
+#elif TYPE==0
+#include "TestFormWindow.h"
+
+int main(int argc, char *argv[]) {
+	gtk_init (&argc, &argv);
+	aslovInit(argv);
+	TestFormWindow c;
+}
+
 #elif TYPE==1
 
 int main() {
 	try {
 		double v = ExpressionEstimator::calculate("sin(pi/4)");
 		std::cout << v;
-	} catch (Exception &e) {
+	} catch (std::exception &e) {
 		std::cout << e.what() << std::endl;
 	}
 }
@@ -76,7 +84,7 @@ int main() {
 		ExpressionEstimator estimator1("x0+2*sin(pi*x1)");
 		std::cout << estimator1.calculate(2, 1. / 6) << std::endl;
 
-	} catch (Exception &e) {
+	} catch (std::exception &e) {
 		std::cout << e.what() << std::endl;
 	}
 }
@@ -97,7 +105,7 @@ int main() {
 		std::cout <<"\""<< a<<"\" = ";
 		try {
 			std::cout << ExpressionEstimator::calculate(a) << std::endl;
-		} catch (Exception &e) {
+		} catch (std::exception &e) {
 			std::cout << e.what() << std::endl;
 		}
 	}
@@ -110,7 +118,7 @@ int main() {
 		try {
 			estimator.compile(a);
 			std::cout << estimator.calculate(vv[i]) << std::endl;
-		} catch (Exception &e) {
+		} catch (std::exception &e) {
 			std::cout << e.what() << std::endl;
 		}
 		i++;
@@ -160,7 +168,7 @@ int main() {
 				printf("%d %d %lf\n",i,j, estimator[j].calculate(v, arguments));
 			}
 		}
-	} catch (Exception &e) {
+	} catch (std::exception &e) {
 		printf("%s\n", e.what());
 	}
 
@@ -168,23 +176,34 @@ int main() {
 #else
 int main(){
 	ExpressionEstimator estimator;
-	int i;
-	const char *s;
+//	int i;
+//	const char *s;
 
-	const char *expression1[] = { "X0+2*x1+3*x2+4*X3" };
+	try{
+//		estimator.compile("a+ 2*A +3*X0+x0",{"a","A","X0","x0"} );
+//		std::cout<<estimator.calculate(1,0,3,4)<< std::endl;
+//
+//		std::vector<std::string> v={"A","a"};
+//		estimator.compile("a+ 2*A +5",v );
+//		std::cout<<estimator.calculate(1,2)<< std::endl;
+//
+//		estimator.compile("a+ sin(b)","b","a" );
+//		std::cout<<estimator.calculate(M_PI/6,1)<< std::endl;
+//
+//		std::string vv[]={"A","a"};
+//		estimator.compile("a+ 2*A",vv,2 );
+//		std::cout<<estimator.calculate(1,2)<< std::endl;
 
-	const std::vector<std::vector<double>> vv = { { 3, 6 ,1,2}, { 8, 6 } };
-
-	for (i = 0; i < int(vv.size()); i++) {
-		const auto& v = vv[i];
-		s = expression1[i];
-		printf("\"%s\"%s = ", s, vectorToString(v).c_str());
-		try {
-			estimator.compile(s);
-			printf("%lf\n", estimator.calculate(v));
-		} catch (Exception &e) {
-			printf("%s\n", e.what());
-		}
+		char p[]="x0+2*x1";
+		std::vector<std::string> v={"a","b","a"};//"x0","x1","a"
+		ExpressionEstimator es(p, v );
+		std::cout<<"arguments"<<es.getArguments()<< std::endl;
+		//int i=5,j=4;
+		std::cout<<es.calculate(1,2,3)<< std::endl;
 	}
+	catch(std::exception& e){
+		std::cout << e.what() << std::endl;
+	}
+
 }
 #endif

@@ -8,14 +8,13 @@
 
 #include <cassert>
 #include "CalculatorWindow.h"
-#include "ExpressionEstimator.h"
+#include "estimator/ExpressionEstimator.h"
 #include "aslov.h"
 
 enum {
 	PIXBUF_COL, TEXT_COL
 };
 
-const char configFile[] = "calculator.cfg";
 const char HOMEPAGE[] = "http://slovesnov.users.sf.net/?calculator"; //use short name because string is used in about dialog
 const char CERROR[] = "cerror";
 const char MAIL[] = "slovesnov@yandex.ru";
@@ -84,7 +83,7 @@ void CalculatorWindow::inputChanged() {
 	if (s.length() != 0) {
 		try {
 			if (s.find('#') != std::string::npos) {
-				throw Exception("unknown char found");
+				throw std::runtime_error("unknown char found");
 			}
 			for (i = 4; i < 8; i++) {
 				for (it = s.begin(); it != s.end(); it++) {
@@ -136,7 +135,7 @@ void CalculatorWindow::inputChanged() {
 			else{
 				s=s1;
 			}
-		} catch (Exception &e) {
+		} catch (std::exception &e) {
 			error = true;
 			s = getLanguageString(ERROR);
 		}
@@ -283,10 +282,10 @@ CalculatorWindow::CalculatorWindow() {
 
 	}
 
-	for (j = i = 0; i < SIZEI(lexer); i++) {
-		j += countLexer(i);
+	for (auto &a : lexer) {
+		i += a.size();
 	}
-	m_functionButton = new GtkWidget*[j];
+	m_functionButton.resize(i);
 
 	gtk_container_set_border_width(GTK_CONTAINER(m_window), 10);
 
@@ -337,9 +336,9 @@ CalculatorWindow::CalculatorWindow() {
 		gtk_grid_set_row_spacing(GTK_GRID(g), 3);
 		gtk_grid_set_column_spacing(GTK_GRID(g), 3);
 
-		l = countLexer(i);
+		l = lexer[i].size();
 		for (j = 0; j < l; j++) {
-			b = m_functionButton[k++] = gtk_button_new_with_label(lexer[i][j]);
+			b = m_functionButton[k++] = gtk_button_new_with_label(lexer[i][j].c_str());
 			g_signal_connect(G_OBJECT(b), "clicked", G_CALLBACK(button_clicked),
 					0);
 			gtk_widget_set_hexpand(b, TRUE);
@@ -434,16 +433,8 @@ void CalculatorWindow::addItemToTable(GtkWidget *grid, GtkWidget *w, int column,
 	gtk_grid_attach(GTK_GRID(grid), w, column, row, 1, 1);
 }
 
-unsigned CalculatorWindow::countLexer(int index) {
-	unsigned i;
-	for (i = 0; i < 12 && lexer[index][i] != NULL; i++)
-		;
-	return i;
-}
-
 CalculatorWindow::~CalculatorWindow() {
-	WRITE_CONFIG(CONFIG_TAGS, CALCULATOR_VERSION, m_language	);
-	delete[] m_functionButton;
+	WRITE_CONFIG(CONFIG_TAGS, CALCULATOR_VERSION, m_language);
 }
 
 void CalculatorWindow::updateLanguage() {
