@@ -14,16 +14,8 @@
 #include "aslov.h"
 #include "estimator/expressionEstimator.h"
 
-enum{
-	ENTRY_EXPRESSION1,
-	ENTRY_EXPRESSION2,
-	ENTRY_VARIABLES,
-	ENTRY_VALUES,
-	ENTRY_SIZE
-};
-
 class TestFormWindow {
-	GtkWidget *m_window,*m_entry[ENTRY_SIZE],*m_label[2];
+	GtkWidget *m_window,*m_entry[4],*m_label[2];
 	ExpressionEstimator e;
 public:
 	TestFormWindow();

@@ -10,13 +10,12 @@
  * TYPE 0 - testFormWindow (under GTK+)
  * TYPE 1 - sample1
  * TYPE 2 - sample2
- * TYPE 3 - sample3
- * TYPE 4 - sample4 random() & threads
- * else   - sample5
+ * TYPE 3 - sample3 random() & threads
+ * else   - sample4
  */
-#define TYPE 0
+#define TYPE 2
 
-#if TYPE>1
+#if TYPE>0
 #include <iostream>
 #include <sstream>
 
@@ -55,34 +54,53 @@ int main(int argc, char *argv[]) {
 #elif TYPE==1
 
 int main() {
+	double v;
 	try {
-		double v = ExpressionEstimator::calculate("sin(pi/4)");
-		std::cout << v;
-	} catch (std::exception &e) {
-		std::cout << e.what() << std::endl;
+		v = ExpressionEstimator::calculate("sin(pi/4)");
+		std::cout << v << std::endl;
+		v = ExpressionEstimator::calculate("pow( sin(pi/10)*4+1 , 2)");
+		std::cout << v << std::endl;
+	} catch (std::exception &ex) {
+		std::cout << ex.what() << std::endl;
 	}
 }
 
 #elif TYPE==2
 
 int main() {
+	ExpressionEstimator e;
+	double v;
+	std::vector<double> d;
+	std::vector<std::string> s;
 	try {
-		ExpressionEstimator estimator;
-		estimator.compile("x0+2*x1");
+		e.compile("x0+2*sin(pi*x1)");
+		v = e.calculate(1, .25);
+		std::cout << v << std::endl;
+		d = { 1, 1. / 6 };
+		v = e.calculate(d);
+		std::cout << v << std::endl;
+		e.compile("x0+2*X1"); // case insensitive variable names
+		v = e.calculate( { 1, .25 });
+		std::cout << v << std::endl;
 
-		std::cout << estimator.calculate(0, 1) << std::endl;
+		ExpressionEstimator e1("x0+2*x1");
+		const double f[] = { 1, 3 };
+		v = e1.calculate(f, 2);
+		std::cout << v << std::endl;
 
-		std::cout << estimator.calculate( { 2, 3 }) << std::endl;
+		e.compile("a+2*b", "a", "b"); // case sensitive variable names
+		// or e.compile("a+2*b", std::vector<std::string> { "a", "b" });
+		// or e.compile("a+2*b", { "a", "b" });
+		// or std::string s[]={ "a", "b" }; e.compile("a+2*b", s, 2);
+		v = e.calculate(1, 1);
+		std::cout << v << std::endl;
 
-		const std::vector<double> v = { 1, 2 };
-		std::cout << estimator.calculate(v) << std::endl;
-
-		const int args = 2;
-		double vv[args] = { 3, 6 };
-		std::cout << estimator.calculate(vv, args) << std::endl;
-
-		ExpressionEstimator estimator1("x0+2*sin(pi*x1)");
-		std::cout << estimator1.calculate(2, 1. / 6) << std::endl;
+		ExpressionEstimator e2("a+2*A", "a", "A");// case sensitive variable names
+		// or ExpressionEstimator e2("a+2*A", std::vector<std::string> { "a", "A" });
+		// or ExpressionEstimator e2("a+2*A", { "a", "A" });
+		// or std::string s[] = { "a", "A" }; ExpressionEstimator e2("a+2*A", s, 2);
+		v = e2.calculate(1, 2);
+		std::cout << v << std::endl;
 
 	} catch (std::exception &e) {
 		std::cout << e.what() << std::endl;
@@ -90,42 +108,6 @@ int main() {
 }
 
 #elif TYPE==3
-/*
-"sin(pi/4)" = 0.707107
-"1+2+" = unexpected operator
-"3*x0+2*x1*x0"[3.000000, 6.000000] = 45.000000
-"6*x0"[8.000000, 6.000000] = invalid number of expression arguments
- */
-
-int main() {
-	ExpressionEstimator estimator;
-	int i;
-	const std::string expression[] = { "sin(pi/4)", "1+2+" };
-	for (auto &a : expression) {
-		std::cout <<"\""<< a<<"\" = ";
-		try {
-			std::cout << ExpressionEstimator::calculate(a) << std::endl;
-		} catch (std::exception &e) {
-			std::cout << e.what() << std::endl;
-		}
-	}
-
-	const char *expression1[] = { "3*x0+2*x1*x0", "6*x0" };
-	const std::vector<std::vector<double>> vv = { { 3, 6 }, { 8, 6 } };
-	i = 0;
-	for (auto &a : expression1) {
-		std::cout << "\"" << a << "\"" << vectorToString(vv[i])<< " = ";
-		try {
-			estimator.compile(a);
-			std::cout << estimator.calculate(vv[i]) << std::endl;
-		} catch (std::exception &e) {
-			std::cout << e.what() << std::endl;
-		}
-		i++;
-	}
-}
-
-#elif TYPE==4
 
 #include <thread>
 
@@ -180,8 +162,9 @@ int main(){
 //	const char *s;
 
 	try{
-//		estimator.compile("a+ 2*A +3*X0+x0",{"a","A","X0","x0"} );
-//		std::cout<<estimator.calculate(1,0,3,4)<< std::endl;
+		double v=-1;
+		estimator.compile("a+ 2*A +3*X0+x0",{"a","A","X0","x0"} );
+		std::cout<<estimator.calculate(1,0,3,4)<< std::endl;
 //
 //		std::vector<std::string> v={"A","a"};
 //		estimator.compile("a+ 2*A +5",v );
@@ -194,12 +177,6 @@ int main(){
 //		estimator.compile("a+ 2*A",vv,2 );
 //		std::cout<<estimator.calculate(1,2)<< std::endl;
 
-		char p[]="x0+2*x1";
-		std::vector<std::string> v={"a","b","a"};//"x0","x1","a"
-		ExpressionEstimator es(p, v );
-		std::cout<<"arguments"<<es.getArguments()<< std::endl;
-		//int i=5,j=4;
-		std::cout<<es.calculate(1,2,3)<< std::endl;
 	}
 	catch(std::exception& e){
 		std::cout << e.what() << std::endl;

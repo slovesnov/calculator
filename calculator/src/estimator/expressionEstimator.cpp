@@ -36,6 +36,18 @@ static std::regex bregex(std::string const& s){
 	return std::regex("\\b"+s+"\\b");
 }
 
+static std::vector<std::string> splitR(std::string const &s, std::string const &separator = "\\s+") {
+	std::vector<std::string> v;
+	std::regex rgx(separator);
+	std::sregex_token_iterator iter(s.begin(),
+			s.end(), rgx, -1);
+	std::sregex_token_iterator end;
+	for (; iter != end; ++iter){
+		v.push_back( *iter);
+	}
+	return v;
+}
+
 #ifdef _DEBUG
 	int	ExpressionEstimator::totalDestroyed=0;
 	int	ExpressionEstimator::totalCreated=0;
@@ -100,14 +112,16 @@ void ExpressionEstimator::getToken() {
 		}
 	} else if (isDigit() || isPoint()) {
 		m_operator = OPERATOR_ENUM::NUMBER;
-		/*21aug2018 version 1.14 fixed bug with parsing (213.45-206.75)*2 and 213.45-206.75*27
-		 cann't use const char*p=m_expression.substr(m_position).c_str(); 
-		 because local string is created and destroyed, so use 
-		 const char*p=m_expression.c_str()+m_position;
-		 */
 		const char *p = m_expression.c_str() + m_position;
 		char *pEnd;
-		m_tokenValue = strtod(p, &pEnd);
+		//binary numbers
+		//strtoll("0b")=0 but it's error, so check simbol after 'B'
+		if(*p=='0' && m_position+2 < m_expression.length() && p[1]=='B' && strchr("01",p[2])){
+			m_tokenValue = strtoll(p+2, &pEnd,2);
+		}
+		else{
+			m_tokenValue = strtod(p, &pEnd);//also parse hex
+		}
 		m_position += pEnd - p;
 	} else {
 		throw std::runtime_error("unknown symbol");
@@ -298,7 +312,9 @@ void ExpressionEstimator::compile(const std::string &expression,std::vector<std:
 	int i;
 	std::string s, q,e = expression;
 	std::vector<std::string> v;
-	const char r = '0';//should be \w because use \b in regex replace
+	std::smatch sm;
+	//char r should be \w because use \b in regex replace. 0x10=16 is good, so use '1' 1x.. is invalid
+	const char r = '1';
 
 	v=variables;
 
@@ -326,26 +342,42 @@ void ExpressionEstimator::compile(const std::string &expression,std::vector<std:
 
 	v=variables;
 	for (auto &a : v) {
+		q=r+a;
+		//check 1x... before replace or compile("1x0","x0") will be ok
+		if (std::regex_search(e, sm,std::regex( "\\w*"+q+"\\w*" ))) {
+			throw std::runtime_error("invalid keyword \"" + sm.str()+"\"");
+		}
+
 		if(std::regex_search(a, std::regex("^[xX]\\d+$"))){
-			e = std::regex_replace(e, bregex( a ), r+a);
-			a=r+a;
+			e = std::regex_replace(e, bregex( a ), q);
+			a=q;
 		}
 	}
 
-	std::smatch sm;
 	s=e;
 	i=0;
 	for (auto &a : v) {
 		q = std::to_string(i);
 		if (std::regex_search(e, sm,bregex( "[xX]"+q ))) {
-			throw std::runtime_error("unknown variable " + sm.str());
+			throw std::runtime_error("unknown variable \"" + sm.str()+"\"");
 		}
 		s = std::regex_replace(s, bregex( a ),"x"+q);
 		i++;
 	}
 
-//	printf("%s 348\n",s.c_str());
 	compile(s);
+	if (m_arguments > v.size()) { //compile("x0+x1","x0")
+		for (auto &a : splitR(expression, "\\W+")) {
+			if (::tolower(a[0]) == 'x'
+					&& atoi(a.c_str() + 1) >= int(v.size())) {
+				throw std::runtime_error("unknown variable \"" + a + "\"");
+			}
+		}
+		//should not happen
+		throw std::runtime_error(
+				"unknown variable found ExpressionEstimator::compile at line"
+						+ std::to_string(__LINE__));
+	}
 	m_arguments=v.size();
 }
 

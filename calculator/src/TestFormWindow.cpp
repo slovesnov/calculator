@@ -38,6 +38,7 @@ TestFormWindow::TestFormWindow() {
 	gtk_window_set_position(GTK_WINDOW(m_window), GTK_WIN_POS_CENTER);
 
 	std::string d[]={"Sin(pI/4)","x0+2*x1","x0 x1","1 2"};
+	std::string caption[]= {"expression","variables","values"};
 	i=0;
 	for(auto&a:m_entry){
 		a = gtk_entry_new();
@@ -48,22 +49,24 @@ TestFormWindow::TestFormWindow() {
 	}
 	for(auto&a:m_label){
 		a = gtk_label_new("");
+		gtk_widget_set_size_request(a, 250, -1);
 	}
 
 
 	mbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 3);
 
 	box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 3);
-	gtk_box_pack_start(GTK_BOX(box), gtk_label_new("expression"), FALSE, FALSE, 0);
-	gtk_box_pack_start(GTK_BOX(box), m_entry[ENTRY_EXPRESSION1], TRUE, TRUE, 0);
+	gtk_box_pack_start(GTK_BOX(box), gtk_label_new(caption[0].c_str()), FALSE, FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(box), m_entry[0], TRUE, TRUE, 0);
 	gtk_box_pack_start(GTK_BOX(box), m_label[0], FALSE, FALSE, 0);
 	gtk_container_add(GTK_CONTAINER(mbox), box);
 
 	box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 3);
-	gtk_box_pack_start(GTK_BOX(box), gtk_label_new("expression"), FALSE, FALSE, 0);
-	gtk_box_pack_start(GTK_BOX(box), m_entry[ENTRY_EXPRESSION2], 0, 0, 0);
-	gtk_box_pack_start(GTK_BOX(box), m_entry[ENTRY_VARIABLES], 0, 0, 0);
-	gtk_box_pack_start(GTK_BOX(box), m_entry[ENTRY_VALUES], 0, 0, 0);
+	for (i = 1; i < 4; i++) {
+		gtk_box_pack_start(GTK_BOX(box), gtk_label_new(caption[i - 1].c_str()),
+				FALSE, FALSE, 0);
+		gtk_box_pack_start(GTK_BOX(box), m_entry[i], 0, 0, 0);
+	}
 	gtk_box_pack_start(GTK_BOX(box), m_label[1], FALSE, FALSE, 0);
 	gtk_container_add(GTK_CONTAINER(mbox), box);
 
@@ -88,7 +91,7 @@ TestFormWindow::TestFormWindow() {
 			G_CALLBACK(gtk_main_quit), G_OBJECT(m_window));
 
 	gtk_container_add(GTK_CONTAINER(m_window), mbox);
-	gtk_widget_set_size_request(m_entry[ENTRY_EXPRESSION2], 350, -1);
+	gtk_widget_set_size_request(m_entry[1], 350, -1);
 	gtk_widget_set_size_request(mbox, 1050, -1);
 	gtk_widget_show_all(m_window);
 	//set dot as decimal separator, standard locale, for output
@@ -116,16 +119,15 @@ void TestFormWindow::recount(int i) {
 	std::vector<double> b;
 	try{
 		if(i){
-			s1=gtk_entry_get_text(GTK_ENTRY(m_entry[ENTRY_VARIABLES]));
+			s1=gtk_entry_get_text(GTK_ENTRY(m_entry[2]));
 			v=splitR(s1);
-			s1=gtk_entry_get_text(GTK_ENTRY(m_entry[ENTRY_VALUES]));
+			s1=gtk_entry_get_text(GTK_ENTRY(m_entry[3]));
 			for(auto &a:splitR(s1)){
 				if(parseString(a, r)){
 					b.push_back(r);
 				}
 				else{
-					throw std::runtime_error(
-							"can't parse \""+a+"\"");
+					throw std::runtime_error("can't parse \"" + a + "\"");
 				}
 			}
 //			printl(s, joinV(v,","))
@@ -137,6 +139,5 @@ void TestFormWindow::recount(int i) {
 	catch(std::exception&ex){
 		s=ex.what();
 	}
-	s=" = "+s;
 	gtk_label_set_text(GTK_LABEL(m_label[i]), s.c_str());
 }
