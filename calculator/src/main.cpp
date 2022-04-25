@@ -10,10 +10,11 @@
  * TYPE 0 - testFormWindow (under GTK+)
  * TYPE 1 - sample1
  * TYPE 2 - sample2
- * TYPE 3 - sample3 random() & threads
- * else   - sample4
+ * TYPE 3 - parser check using test cases
+ * TYPE 4 - sample random() & threads
+ * else   - sample
  */
-#define TYPE 2
+#define TYPE 3
 
 #if TYPE>0
 #include <iostream>
@@ -109,6 +110,51 @@ int main() {
 
 #elif TYPE==3
 
+#include <vector>
+#include <fstream>
+
+#include "testcase/Case.h"
+
+#include "aslov.h"
+
+//using VString=std::vector<std::string>;
+
+int main() {
+	const std::string fn = "testcases.txt";
+	std::ifstream infile(fn);
+	assert(infile.is_open());
+	std::string l, s, q[3];
+	int i, j, k, r[] = { 0, 0 }, li[3],line;
+	TestCase::Case t;
+	i = 0;
+	j = 0;
+
+	line = 1;
+	while (std::getline(infile, l)) {
+		if (l.empty()) {
+			line++;
+			continue;
+		}
+		q[i % 3] = l;
+		li[i%3]=line;
+		if (i % 3 == 2) {
+			t.set(q, li);
+			r[t.test()]++;
+		}
+		i++;
+		line++;
+	}
+
+	j = r[0] + r[1];
+	k = log10(j) + 1;
+	for (i = 1; i >= 0; i--) {
+		println("%-5s %*d/%d=%5.1lf%%", i ? "ok" : "error", k, r[i], j,
+				r[i] * 100. / j);
+	}
+}
+
+#elif TYPE==4
+
 #include <thread>
 
 void f(int t) {
@@ -160,23 +206,16 @@ int main(){
 	ExpressionEstimator estimator;
 //	int i;
 //	const char *s;
+//	const std::string data[]={"0b10.11+1","0b.1-1","0b1.-1","0b.","0b.*2"};
+//	const double error=std::numeric_limits<double>::max();
+//	double r[]={3.75,-.5,0,error};
 
 	try{
-		double v=-1;
-		estimator.compile("a+ 2*A +3*X0+x0",{"a","A","X0","x0"} );
-		std::cout<<estimator.calculate(1,0,3,4)<< std::endl;
-//
-//		std::vector<std::string> v={"A","a"};
-//		estimator.compile("a+ 2*A +5",v );
-//		std::cout<<estimator.calculate(1,2)<< std::endl;
-//
-//		estimator.compile("a+ sin(b)","b","a" );
-//		std::cout<<estimator.calculate(M_PI/6,1)<< std::endl;
-//
-//		std::string vv[]={"A","a"};
-//		estimator.compile("a+ 2*A",vv,2 );
-//		std::cout<<estimator.calculate(1,2)<< std::endl;
-
+//		std::cout<<ExpressionEstimator::calculate("0b10.11+1")<< std::endl;//3.75
+//		std::cout<<ExpressionEstimator::calculate("0b.1-1")<< std::endl;//-0.5
+//		std::cout<<ExpressionEstimator::calculate("0b1.-1")<< std::endl;//0
+//		std::cout<<ExpressionEstimator::calculate("0b.01*2")<< std::endl;
+		std::cout<<ExpressionEstimator::calculate("0b0.3*2")<< std::endl;
 	}
 	catch(std::exception& e){
 		std::cout << e.what() << std::endl;

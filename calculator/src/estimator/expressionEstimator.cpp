@@ -68,14 +68,16 @@ int ExpressionEstimator::getIndex(const char *a[], const char *v) {
 
 void ExpressionEstimator::getToken() {
 	unsigned i;
-	char *c;
+	char *pEnd;
 	const char T[] = "+-*/()[]{},";
+	const char *p,*p1;
+	unsigned long long v;
 
 	if (m_position == m_expression.length()) {
 		m_operator = OPERATOR_ENUM::END;
-	} else if ((c = strchr(T, m_expression[m_position])) != NULL) {
+	} else if ((p = strchr(T, m_expression[m_position])) != NULL) {
 		m_position++;
-		m_operator = (OPERATOR_ENUM) (c - T);
+		m_operator = (OPERATOR_ENUM) (p - T);
 	} else if (isLetter()) {
 		for (i = m_position++;
 				m_position < m_expression.length() && isFunctionSymbol();
@@ -112,15 +114,38 @@ void ExpressionEstimator::getToken() {
 		}
 	} else if (isDigit() || isPoint()) {
 		m_operator = OPERATOR_ENUM::NUMBER;
-		const char *p = m_expression.c_str() + m_position;
-		char *pEnd;
+		p = m_expression.c_str() + m_position;
 		//binary numbers
-		//strtoll("0b")=0 but it's error, so check simbol after 'B'
-		if(*p=='0' && m_position+2 < m_expression.length() && p[1]=='B' && strchr("01",p[2])){
-			m_tokenValue = strtoll(p+2, &pEnd,2);
+		//strtoll("0b")=0 but it's error, so check symbol after 'B'
+		if (*p == '0' && m_position + 2 < m_expression.length() && p[1] == 'B'
+				&& strchr("01.", p[2])) {
+			p1 = p + 2;
+			bool f=*p1 == '.';
+			if (f) {
+				m_tokenValue = 0;
+			} else {
+				m_tokenValue = strtoull(p1, &pEnd, 2);
+				p1=pEnd;
+			}
+			if (*p1 == '.') {
+				p1++;
+				//strchr("01",'\0')!=NULL
+				if(*p1=='0' || *p1=='1'){//0xb1.-1, prevents strtoull("-1")
+					//printl(int(*p1))
+					v = strtoull(p1, &pEnd, 2);
+					m_tokenValue += double(v) / (1ll << (pEnd - p1));
+				}
+				else{
+					if(f){
+						throw std::runtime_error("invalid binary constant");
+					}
+					p--;//for m_position += pEnd - p;
+					//printf("[%s]\n",m_expression.c_str() + m_position+(pEnd-p));
+				}
+			}
 		}
 		else{
-			m_tokenValue = strtod(p, &pEnd);//also parse hex
+			m_tokenValue = strtod(p, &pEnd);//also parse hex, 0x.34 also parsed here
 		}
 		m_position += pEnd - p;
 	} else {
@@ -142,7 +167,7 @@ void ExpressionEstimator::compile(const char *expression) {
 	setlocale(LC_NUMERIC, "C");
 
 	const char *pc = expression;
-	for (; *pc != 0; pc++) { //make upper string without emply symbols
+	for (; *pc != 0; pc++) { //make upper string without empty symbols
 		if (*pc == ' ' || *pc == '\t') {
 			continue;
 		}

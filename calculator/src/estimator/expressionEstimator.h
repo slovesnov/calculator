@@ -102,16 +102,12 @@ public:
 
 	ExpressionEstimator(unsigned a=0) {
 		m_root = NULL; //don't remove
-		//printf("srand%d\n",unsigned(time(NULL)+a));
 		srand(time(NULL)+a);
-
-		//fix eclipse warnings
-//		m_operator = END;
-//		m_argument = NULL;
-//		m_tokenValue = m_argumentSize = m_arguments = 0;
-//		m_position = -1;
 	}
 
+	//forbid copy
+	ExpressionEstimator(ExpressionEstimator const&) = delete;
+	ExpressionEstimator& operator=(ExpressionEstimator const&) = delete;
 
 	template<typename ...A>
 	ExpressionEstimator(const std::string &expression, A ...a) {

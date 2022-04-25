@@ -3,7 +3,7 @@
 #define GTKPATH "C:\soft\msys64\mingw64\"
 #define SITE "http://slovesnov.users.sf.net/"
 #define APPNAME "calculator"
-#define VERSION "1.21"
+#define VERSION "1.22"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
