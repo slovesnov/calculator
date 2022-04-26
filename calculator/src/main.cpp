@@ -117,25 +117,25 @@ int main() {
 
 #include "aslov.h"
 
-//using VString=std::vector<std::string>;
-
 int main() {
 	const std::string fn = "testcases.txt";
 	std::ifstream infile(fn);
-	assert(infile.is_open());
-	std::string l, s, q[3];
+	if(!infile.is_open()){//not open if run using shortcut
+		printl("need to run under eclipse");
+		return 0;
+	}
+	std::string s, q[3];
 	int i, j, k, r[] = { 0, 0 }, li[3],line;
 	TestCase::Case t;
-	i = 0;
-	j = 0;
 
+	i = 0;
 	line = 1;
-	while (std::getline(infile, l)) {
-		if (l.empty()) {
+	while (std::getline(infile, s)) {
+		if (s.empty()) {
 			line++;
 			continue;
 		}
-		q[i % 3] = l;
+		q[i % 3] = s;
 		li[i%3]=line;
 		if (i % 3 == 2) {
 			t.set(q, li);

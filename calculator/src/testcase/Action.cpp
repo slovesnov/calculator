@@ -15,12 +15,6 @@
 
 namespace TestCase {
 
-Action::Action() {
-}
-
-Action::~Action() {
-}
-
 void Action::set(std::string s,int line) {
 	if(s=="scompile"){
 		action=ActionEnum::STATIC_COMPILE;

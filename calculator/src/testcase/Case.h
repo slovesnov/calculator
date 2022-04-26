@@ -24,8 +24,6 @@ public:
 	Action action;
 	Result result;
 	ExpressionEstimator e;
-	Case();
-	virtual ~Case();
 	void set(std::string s[],int lines[]);
 	bool test();
 };

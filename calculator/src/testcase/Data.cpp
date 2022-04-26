@@ -15,13 +15,6 @@ VString splitR(std::string const &s, std::string const &separator="\\s+");
 
 namespace TestCase {
 
-Data::Data() {
-}
-
-Data::~Data() {
-}
-
-
 void Data::set(std::string s,int line) {
 	auto p=s.find('"');
 	assert(p!=std::string::npos);

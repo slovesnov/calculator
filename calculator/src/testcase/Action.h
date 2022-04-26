@@ -23,8 +23,6 @@ public:
 		COMPILE_CALCULATE
 	};
 	ActionEnum action;
-	Action();
-	virtual ~Action();
 	void set(std::string s,int line);
 	std::string toString()const;
 };

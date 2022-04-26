@@ -15,12 +15,6 @@
 
 namespace TestCase {
 
-Case::Case() {
-}
-
-Case::~Case() {
-}
-
 void Case::set(std::string s[],int lines[]) {
 	data.set(s[0],lines[0]);
 	action.set(s[1],lines[1]);

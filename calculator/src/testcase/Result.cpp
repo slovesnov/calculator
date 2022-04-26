@@ -33,23 +33,15 @@ std::string etoString(Result::ErrorCode c) {
 	return r->first;
 }
 
-Result::Result() {
-}
-
-Result::~Result() {
-}
-
 void Result::set(std::string s,int line) {
 	auto f = map.find(s);
 	if (f == map.end()) {
 		errorCode = OK;
-		std::size_t p;
-		try {
-			value = std::stod(s, &p);
-			assert(s.length()==p);
-		} catch (std::exception &e) {
-			printel("stoderror",s,e.what())
-		}
+#ifndef NDEBUG
+		bool b=
+#endif
+		parseString(s,value);
+		assert(b);
 	} else {
 		errorCode = f->second;
 	}

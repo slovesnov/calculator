@@ -11,7 +11,6 @@
 #ifndef TESTCASE_RESULT_H_
 #define TESTCASE_RESULT_H_
 
-#include <ostream>
 #include <string>
 
 namespace TestCase {
@@ -23,9 +22,7 @@ public:
 	};
 	ErrorCode errorCode;
 	double value;
-	Result();
 	void set(ErrorCode code,double v=0);
-	virtual ~Result();
 	void set(std::string ,int line);
 	bool operator==(Result const& a)const;
 	bool operator!=(Result const& a)const;

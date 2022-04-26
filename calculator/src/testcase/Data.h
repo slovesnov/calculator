@@ -12,9 +12,6 @@
 #define TESTCASE_DATA_H_
 
 
-#include <string>
-#include <ostream>
-
 #include "aslov.h"
 
 namespace TestCase {
@@ -24,8 +21,6 @@ public:
 	std::string compile;
 	VString variables;
 	std::vector<double> values;
-	Data();
-	virtual ~Data();
 	void set(std::string s,int line);
 	std::string toString()const;
 };
