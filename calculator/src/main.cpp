@@ -14,7 +14,7 @@
  * TYPE 4 - sample random() & threads
  * else   - sample
  */
-#define TYPE 3
+#define TYPE -1
 
 #if TYPE>0
 #include <iostream>

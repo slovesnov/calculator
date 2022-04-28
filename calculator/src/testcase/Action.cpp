@@ -16,7 +16,7 @@
 namespace TestCase {
 
 void Action::set(std::string s,int line) {
-	if(s=="scompile"){
+	if(s=="static_compile"){
 		action=ActionEnum::STATIC_COMPILE;
 	}
 	else if(s=="compile_calculate"){
@@ -29,7 +29,7 @@ void Action::set(std::string s,int line) {
 }
 
 std::string Action::toString() const {
-	return "todo";
+	return action==ActionEnum::STATIC_COMPILE ? "static_compile":"compile_calculate";
 }
 
 
