@@ -130,7 +130,7 @@ double Node::calculate() {
 
 	case OPERATOR_ENUM::RANDOM:
 		//rand() is not thread safe todo
-		//if RAND_MAX=0x7fffffff need to make RAND_MAX + 1. instead of RAND_MAX + 1
+		//fixed if RAND_MAX=0x7fffffff need to make RAND_MAX + 1. instead of RAND_MAX + 1
 		return rand() / (RAND_MAX + 1.);
 
 	case OPERATOR_ENUM::CEIL:
