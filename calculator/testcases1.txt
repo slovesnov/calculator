@@ -1,3 +1,0 @@
-"a+2*A" "a A" "1 2"
-compile_calculate
-5

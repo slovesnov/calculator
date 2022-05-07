@@ -16,6 +16,10 @@
  */
 #define TYPE -1
 
+/* 1.23 fixed bug double(rand()) / (RAND_MAX + 1) -> rand() / (RAND_MAX + 1.)
+ *
+ */
+
 #if TYPE>0
 #include <iostream>
 #include <sstream>
