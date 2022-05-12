@@ -16,10 +16,6 @@
  */
 #define TYPE -1
 
-/* 1.23 fixed bug double(rand()) / (RAND_MAX + 1) -> rand() / (RAND_MAX + 1.)
- *
- */
-
 #if TYPE>0
 #include <iostream>
 #include <sstream>
@@ -215,11 +211,9 @@ int main(){
 //	double r[]={3.75,-.5,0,error};
 
 	try{
-//		std::cout<<ExpressionEstimator::calculate("0b10.11+1")<< std::endl;//3.75
-//		std::cout<<ExpressionEstimator::calculate("0b.1-1")<< std::endl;//-0.5
-//		std::cout<<ExpressionEstimator::calculate("0b1.-1")<< std::endl;//0
-//		std::cout<<ExpressionEstimator::calculate("0b.01*2")<< std::endl;
-		std::cout<<ExpressionEstimator::calculate("0b0.3*2")<< std::endl;
+		 double v1=ExpressionEstimator::calculate("random()");
+		 double v2=ExpressionEstimator::calculate("random()");
+		 printf("%lf %lf",v1,v2);
 	}
 	catch(std::exception& e){
 		std::cout << e.what() << std::endl;

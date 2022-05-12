@@ -8,11 +8,9 @@
 #ifndef _expressionEstimator_h_
 #define _expressionEstimator_h_
 
-#include <ctime>   // time
 #include <vector>
 #include <cstring> //strchr
 #include <string>
-#include <cstdlib> //srand
 #include <stdexcept>
 
 #include "node.h"
@@ -29,7 +27,6 @@ class ExpressionEstimator {
 	unsigned m_arguments;
 	Node *m_root;
 	std::vector<Node*> m_vnode;
-	static unsigned m_c;
 
 	inline bool isLetter() {
 		return isalpha(m_expression[m_position]) != 0;
@@ -100,9 +97,8 @@ public:
 	static int totalDestroyed;
 #endif
 
-	ExpressionEstimator(unsigned a=0) {
+	ExpressionEstimator() {
 		m_root = NULL; //don't remove
-		srand(time(NULL)+a);
 	}
 
 	//forbid copy

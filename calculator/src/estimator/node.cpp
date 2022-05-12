@@ -5,8 +5,13 @@
  All rights reserved.
  ******************************************************/
 
+#include <random>
+#include <cmath>
+
 #include "node.h"
 #include "expressionEstimator.h"
+
+std::mutex Node::m_mutex;
 
 void Node::init(ExpressionEstimator *estimator, OPERATOR_ENUM _operator,
 		double value, Node *left) {
@@ -129,9 +134,7 @@ double Node::calculate() {
 		return log(1 / x + sqrt(1 + x * x) / fabs(x));
 
 	case OPERATOR_ENUM::RANDOM:
-		//rand() is not thread safe todo
-		//fixed if RAND_MAX=0x7fffffff need to make RAND_MAX + 1. instead of RAND_MAX + 1
-		return rand() / (RAND_MAX + 1.);
+		return random();
 
 	case OPERATOR_ENUM::CEIL:
 		return ceil(m_left->calculate());
@@ -161,10 +164,10 @@ double Node::calculate() {
 		return atan2(m_left->calculate(), m_right->calculate());
 
 	case OPERATOR_ENUM::MIN:
-		return min(m_left->calculate(), m_right->calculate());
+		return std::min(m_left->calculate(), m_right->calculate());
 
 	case OPERATOR_ENUM::MAX:
-		return max(m_left->calculate(), m_right->calculate());
+		return std::max(m_left->calculate(), m_right->calculate());
 
 	case OPERATOR_ENUM::X:
 		return m_estimator->m_argument[(int) m_value];
@@ -174,3 +177,11 @@ double Node::calculate() {
 	}
 }
 
+double Node::random() {
+	std::lock_guard<std::mutex> lock(m_mutex);
+	std::random_device rd;
+	std::default_random_engine eng(rd());
+	std::uniform_real_distribution<double> distr(0, 1);
+	double v=distr(eng);
+	return v;
+}

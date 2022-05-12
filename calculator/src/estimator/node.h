@@ -8,40 +8,27 @@
 #ifndef _node_h_
 #define _node_h_
 
-#define _USE_MATH_DEFINES //for M_PI
-#include <cmath>/*floor*/
+#include <mutex>
 
 #include "operatorEnum.h"
 
 class ExpressionEstimator;
 
 class Node {
-
 	friend class ExpressionEstimator;
 
 	ExpressionEstimator *m_estimator;
-
-	inline static double round(double d) {
-		return floor(d + 0.5);
-	}
-
-	inline static double min(double x, double y) {
-		return x <= y ? x : y;
-	}
-
-	inline static double max(double x, double y) {
-		return x >= y ? x : y;
-	}
-
 	OPERATOR_ENUM m_operator;
 	double m_value;
 	Node *m_left, *m_right;
+	static std::mutex m_mutex;
 
 	void init(ExpressionEstimator *estimator, OPERATOR_ENUM _operator,
 			double value, Node *left);
 
 	double calculate();
 
+	static double random();
 };
 
 #endif

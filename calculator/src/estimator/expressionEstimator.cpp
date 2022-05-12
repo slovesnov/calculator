@@ -7,12 +7,17 @@
 
 #include <regex>
 #include <algorithm>
+#define _USE_MATH_DEFINES //for M_PI
+#include <cmath>
+
 #include "expressionEstimator.h"
 
 const char *CONSTANT_NAME[] = { "PI", "E", "SQRT2", "SQRT1_2", "LN2", "LN10",
 		"LOG2E", "LOG10E", NULL };
-const double CONSTANT_VALUE[] = { M_PI, exp(1), sqrt(2), sqrt(0.5), log(2), log(
-		10), 1 / log(2), 1 / log(10) };
+const double CONSTANT_VALUE[] = { M_PI, M_E, M_SQRT2, M_SQRT1_2, M_LN2, M_LN10,
+		M_LOG2E, M_LOG10E };
+//const double CONSTANT_VALUE[] = { M_PI, M_E, sqrt(2), sqrt(0.5), log(2), log(
+//		10), 1 / log(2), 1 / log(10) };
 
 const char *OPERATOR[] = { "PLUS", "MINUS", "MULTIPLY", "DIVIDE",
 		"LEFT_BRACKET", "RIGHT_BRACKET", "LEFT_SQUARE_BRACKET",
@@ -52,8 +57,6 @@ static std::vector<std::string> splitR(std::string const &s, std::string const &
 	int	ExpressionEstimator::totalDestroyed=0;
 	int	ExpressionEstimator::totalCreated=0;
 #endif
-
-unsigned ExpressionEstimator::m_c=0;
 
 int ExpressionEstimator::getIndex(const char *a[], const char *v) {
 	const char *n;
@@ -301,14 +304,7 @@ double ExpressionEstimator::calculate() {
 }
 
 double ExpressionEstimator::calculate(const char *s) {
-	/* uses m_c to avoid same results returns by
-	 * double v1=calculate("random()");
-	 * double v2=calculate("random()");
-	 * need v1 != v2
-	 * also need to obtain different numbers for different threads
-	 */
-	ExpressionEstimator estimator(m_c);
-	m_c+=123456;//somehow big number gives big dispersion
+	ExpressionEstimator estimator;
 	estimator.compile(s);
 	estimator.m_argument = NULL; //clear all arguments
 	return estimator.calculate();
