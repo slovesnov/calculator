@@ -3,6 +3,44 @@ a=e b=pi
 
 pow(sin(pi/10)*4+1,2)
 
+1.23 12 5 2022
+[c++] functions min, max, round in Node class are changed to standard functions
+[c++] added random() function to Node class which uses c++11 features. This function is thread safe and working good for many threads. Also bad code for correct work of previous version of random numbers generator is removed.
+[c++] no need to recompile calculator & graph
+
+[ru]
+[c++] функции min, max, round в классе Node заменены на стандартные функции
+[c++] добавлена функция random() в класс Node, которая использует возможности c++11. Эта функция потокозащищенная и хорошо работает для многих потоков. Также был удален плохой код, который был написан для корректной работы генератора случайных чисел предыдущей версии.
+[c++] не требуется перекомпиляции калькулятора и построителя графиков
+
+1.22 29 4 2022
+[c++/java/js] added test cases
+[c++/java/js] add variable set for constuctor/compile()
+[c++/java/js] add formula support for min, max, steps inputs
+[c++/java] add variadic argument for calculate()
+[c++/java] add formula creation in constructor
+[c++] Exception/IllegalArgumentException classes replaced by std::runtime_error/std::invalid_argument
+[c++] enum OPERATOR_ENUM became class to hide global constants
+[c++] add graph plotter application
+[js] added support for formulas without variable list for compile(), variables x0,x1 are assumed...
+[java] update calculator/plotter, now like c++/javascript
+[java] remove applet classes
+[java] fix argument count bug for plotter, for example y(t)=random()
+
+[ru]
+[c++/java/js] добавлены тестовые случаи
+[c++/java/js] добавлена установка множества переменных в конструкторе и compile()
+[c++/java/js] добавлена поддержка формул для min, max, steps
+[c++/java] добавлено различное число переменных в calculate()
+[c++/java] добавлено создание формул в конструкторе
+[c++] классы Exception/IllegalArgumentException заменены на std::runtime_error/std::invalid_argument
+[c++] enum OPERATOR_ENUM стал классом чтобы скрыть глобальные константы
+[c++] добавлен построитель графиков
+[js] добавлена поддержка формул без списка переменных для compile(), предполагаются переменные x0,x1...
+[java] обновился калькулятор/построитель графиков, сейчас сделан как на c++/javascript
+[java] удалены классы апплетов
+[java] исправлен баг, считающий число аргументов в построителе графиков, например y(t)=random()
+
 1.21 8 4 2022
 [с++] function ExpressionEstimator::Init() is removed
 [с++] fixed bug with max value of random() function
