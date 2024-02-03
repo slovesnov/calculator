@@ -72,14 +72,13 @@ enum ENTRY_ENUM {
 const ENTRY_ENUM ENTRY_ENUM_ARRAY[] = { ENTRY_INPUT, ENTRY_RESULT, ENTRY_MEMORY,
 		ENTRY_BUFFER, ENTRY_A, ENTRY_B, ENTRY_C, ENTRY_D };
 
-static VString lexer[] = { { "exp()", "log()", "pow(,)", "sqrt()",
-		"abs()", "random()", "min(,)", "max(,)" }, { "pi", "e", "sqrt2",
-		"sqrt1_2", "ln2", "ln10", "log2e", "log10e" }, { "sin()", "cos()",
-		"tan()", "cot()", "sec()", "csc()", "asin()", "acos()", "atan()",
-		"acot()", "asec()", "acsc()" }, { "sinh()", "cosh()", "tanh()",
-		"coth()", "sech()", "csch()", "asinh()", "acosh()", "atanh()",
-		"acoth()", "asech()", "acsch()" }, { "ceil()", "floor()", "round()",
-		"atan2(,)" } };
+static VString lexer[] = { { "exp()", "log()", "pow(,)", "sqrt()", "abs()",
+		"random()", "min(,)", "max(,)" }, { "pi", "e", "sqrt2", "sqrt1_2",
+		"ln2", "ln10", "log2e", "log10e" }, { "sin()", "cos()", "tan()",
+		"cot()", "sec()", "csc()", "asin()", "acos()", "atan()", "acot()",
+		"asec()", "acsc()" }, { "sinh()", "cosh()", "tanh()", "coth()",
+		"sech()", "csch()", "asinh()", "acosh()", "atanh()", "acoth()",
+		"asech()", "acsch()" }, { "ceil()", "floor()", "round()", "atan2(,)" } };
 
 class CalculatorWindow {
 	GtkWidget *m_window;
@@ -95,7 +94,8 @@ class CalculatorWindow {
 	int m_language;
 
 	const gchar* getLanguageString(STRING_ENUM e) {
-		return g_locale_to_utf8(languageString[m_language][e].c_str(), -1, NULL, NULL, NULL);
+		return g_locale_to_utf8(languageString[m_language][e].c_str(), -1, NULL,
+				NULL, NULL);
 	}
 
 	void addItemToTable(GtkWidget *table, GtkWidget *w, int row, int column);

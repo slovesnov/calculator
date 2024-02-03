@@ -8,7 +8,7 @@
 
 #include <cassert>
 #include "CalculatorWindow.h"
-#include "estimator/ExpressionEstimator.h"
+#include "ExpressionEstimator.h"
 #include "aslov.h"
 
 enum {
@@ -18,10 +18,10 @@ enum {
 const char HOMEPAGE[] = "http://slovesnov.users.sf.net/?calculator"; //use short name because string is used in about dialog
 const char CERROR[] = "cerror";
 const char MAIL[] = "slovesnov@yandex.ru";
-const double CALCULATOR_VERSION = 1.22; //format("%.2lf",)
+const double CALCULATOR_VERSION = 1.25; //format("%.2lf",)
 const std::string LNG[] = { "en", "ru" };
 const std::string LANGUAGE[] = { "english", "russian" };
-const std::string CONFIG_TAGS[]={"version","language"};
+const std::string CONFIG_TAGS[] = { "version", "language" };
 
 const STRING_ENUM GROUP_TITLE[] = { COMMON_FUNCTIONS, CONSTANTS,
 		TRIGONOMETRIC_FUNCTIONS, HYPERBOLIC_FUNCTIONS, ROUNDING_FUNCTIONS, };
@@ -100,40 +100,36 @@ void CalculatorWindow::inputChanged() {
 						"(" + getText(ENTRY_ENUM_ARRAY[i]) + ")");
 			}
 
-			v=ExpressionEstimator::calculate(s.c_str());
+			v = ExpressionEstimator::calculate(s.c_str());
 			s1 = format("%.15lf", v);
 			i = s1.length();
 			//starts from s1.c_str() + i - 2. -2 because 5.000000000000001 need to skip last digit
-			if(s1[i-2]=='0'){
+			if (s1[i - 2] == '0') {
 				for (p = s1.c_str() + i - 2; *p == '0'; p--)
 					;
 				if (*p != '.') {
 					p++;
 				}
 				s = s1.substr(0, p - s1.c_str());
-			}
-			else if(s1[i-2]=='9'){
+			} else if (s1[i - 2] == '9') {
 				for (p = s1.c_str() + i - 2; *p == '9'; p--)
 					;
 				if (*p == '.') {
 					//originally was pow(sqrt(12), 2)=11.999999999999998 now make s=12
-					s=std::to_string(int(v)+1);
-				}
-				else{
+					s = std::to_string(int(v) + 1);
+				} else {
 					//pow(sqrt(19.99), 2)=19.989999999999998
 					p++;
 					s = s1.substr(0, p - s1.c_str());
 					//originally was 19.989999999999998 now s=19.98 make s=19.99
-					s[s.length()-1]++;
+					s[s.length() - 1]++;
 				}
-			}
-			else if(s1[i-1]=='0'){
+			} else if (s1[i - 1] == '0') {
 				//just last one zero because s1[i-2]!='0' checked upper
 				//pow(sqrt(1.23945632114677),2)=1.239456321146770
-				s=s1.substr(0,i-1);
-			}
-			else{
-				s=s1;
+				s = s1.substr(0, i - 1);
+			} else {
+				s = s1;
 			}
 		} catch (std::exception &e) {
 			error = true;
@@ -228,15 +224,15 @@ CalculatorWindow::CalculatorWindow() {
 	//load config
 	m_language = 0;
 	{
-	MapStringString m;
-	MapStringString::iterator it;
-	if (loadConfig(m)) {
-		if ((it = m.find("language")) != m.end()) {
-			if(parseString(it->second, j) && j>=0 && j<SIZEI(LNG) ){
-				m_language=j;
+		MapStringString m;
+		MapStringString::iterator it;
+		if (loadConfig(m)) {
+			if ((it = m.find("language")) != m.end()) {
+				if (parseString(it->second, j) && j >= 0 && j < SIZEI(LNG)) {
+					m_language = j;
+				}
 			}
 		}
-	}
 	}
 
 	for (auto &f : m_frame) {
@@ -320,7 +316,7 @@ CalculatorWindow::CalculatorWindow() {
 	gtk_box_pack_start(GTK_BOX(box), m_entry[ENTRY_RESULT], TRUE, TRUE, 0);
 	for (i = 0; i < M_BUTTONS_LINE3; i++) {
 		gtk_box_pack_start(GTK_BOX(box), m_button[i + M_BUTTONS_LINE1], FALSE,
-				FALSE, 0);
+		FALSE, 0);
 	}
 	gtk_box_pack_start(GTK_BOX(mbox), box, FALSE, FALSE, 0);
 
@@ -338,7 +334,8 @@ CalculatorWindow::CalculatorWindow() {
 
 		l = lexer[i].size();
 		for (j = 0; j < l; j++) {
-			b = m_functionButton[k++] = gtk_button_new_with_label(lexer[i][j].c_str());
+			b = m_functionButton[k++] = gtk_button_new_with_label(
+					lexer[i][j].c_str());
 			g_signal_connect(G_OBJECT(b), "clicked", G_CALLBACK(button_clicked),
 					0);
 			gtk_widget_set_hexpand(b, TRUE);
@@ -489,7 +486,7 @@ void CalculatorWindow::aboutDialog() {
 
 	STRING_ENUM sid[] = { PROGRAM_VERSION, AUTHOR, COPYRIGHT, HOMEPAGE_STRING,
 			CLEAR,/* build info (just use id)*/
-			RECOUNT,/* file size (just use id)*/
+			RECOUNT, /* file size (just use id)*/
 	};
 	STRING_ENUM id;
 	for (i = 0; i < G_N_ELEMENTS(sid); i++) {
@@ -499,9 +496,10 @@ void CalculatorWindow::aboutDialog() {
 					getLanguageString(SCIENTIFIC_CALCULATOR),
 					CALCULATOR_VERSION);
 		} else if (id == CLEAR) {
-			s =getBuildVersionString(true);
+			s = getBuildVersionString(true);
 		} else if (id == RECOUNT) {
-			s="executable file size "+toString(getApplicationFileSize(), ',');
+			s = "executable file size "
+					+ toString(getApplicationFileSize(), ',');
 		} else {
 			s = getLanguageString(id);
 

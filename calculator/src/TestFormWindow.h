@@ -12,15 +12,15 @@
 #define TESTFORMWINDOW_H_
 
 #include "aslov.h"
-#include "estimator/expressionEstimator.h"
+#include "expressionEstimator.h"
 
 class TestFormWindow {
-	GtkWidget *m_window,*m_entry[4],*m_label[2];
+	GtkWidget *m_window, *m_entry[4], *m_label[2];
 	ExpressionEstimator e;
 public:
 	TestFormWindow();
 	virtual ~TestFormWindow();
-	void inputChanged(GtkWidget*w);
+	void inputChanged(GtkWidget *w);
 	void recount(int i);
 };
 
