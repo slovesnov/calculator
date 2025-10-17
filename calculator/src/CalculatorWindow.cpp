@@ -8,7 +8,7 @@ enum {
 	PIXBUF_COL, TEXT_COL
 };
 
-const char HOMEPAGE[] = "http://slovesnov.rf.gd/?calculator";
+const char HOMEPAGE[] = "http://slovesnov.rf.gd?calculator";
 const char CERROR[] = "cerror";
 const char MAIL[] = "slovesnov@yandex.ru";
 const std::string LNG[] = { "en", "ru" };

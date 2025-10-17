@@ -87,7 +87,7 @@ class CalculatorWindow {
 
 	const gchar* getLanguageString(STRING_ENUM e) {
 		return g_locale_to_utf8(languageString[m_language][e].c_str(), -1, NULL,
-				NULL, NULL);
+		NULL, NULL);
 	}
 
 	void addItemToTable(GtkWidget *table, GtkWidget *w, int row, int column);
