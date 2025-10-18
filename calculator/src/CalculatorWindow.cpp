@@ -8,7 +8,7 @@ enum {
 	PIXBUF_COL, TEXT_COL
 };
 
-const char HOMEPAGE[] = "http://slovesnov.rf.gd?calculator";
+const std::string HOMEPAGE = "http://slovesnov.rf.gd?calculator";
 const char CERROR[] = "cerror";
 const char MAIL[] = "slovesnov@yandex.ru";
 const std::string LNG[] = { "en", "ru" };
@@ -463,10 +463,9 @@ unsigned CalculatorWindow::countArguments(const char *function) {
 
 void CalculatorWindow::aboutDialog() {
 	unsigned i, j;
-	std::string s;
+	std::string s, s1;
 	GtkWidget *box, *hbox, *dialog, *label;
 	char *markup;
-	const char *p;
 
 	dialog = gtk_dialog_new();
 	gtk_window_set_title(GTK_WINDOW(dialog),
@@ -508,15 +507,14 @@ void CalculatorWindow::aboutDialog() {
 		}
 
 		if (id == HOMEPAGE_STRING) {
-			p = HOMEPAGE;
 			label = gtk_label_new("");
-			markup = g_markup_printf_escaped("%s <a href=\"%s,%s\">\%s,%s</a>",
-					getLanguageString(id), p, LANGUAGE[m_language].c_str(), p,
-					LANGUAGE[m_language].c_str());
+			s1 = HOMEPAGE + ',' + LANGUAGE[m_language];
+			markup = g_markup_printf_escaped("%s <a href=\"%s\">%s</a>",
+					getLanguageString(id), s1.c_str(), s1.c_str());
 			gtk_label_set_markup(GTK_LABEL(label), markup);
 			g_free(markup);
 			g_signal_connect(label, "activate-link", G_CALLBACK(label_clicked),
-					gpointer(p));
+					gpointer(NULL));
 		} else {
 #ifndef NDEBUG
 			//output that NDEBUG is not defined
