@@ -507,7 +507,7 @@ void CalculatorWindow::aboutDialog() {
 		}
 
 		if (id == HOMEPAGE_STRING) {
-			label = gtk_label_new("");
+			label = gtk_label_new(NULL);
 			s1 = HOMEPAGE + ',' + LANGUAGE[m_language];
 			markup = g_markup_printf_escaped("%s <a href=\"%s\">%s</a>",
 					getLanguageString(id), s1.c_str(), s1.c_str());
