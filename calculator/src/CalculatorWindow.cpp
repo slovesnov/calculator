@@ -489,7 +489,7 @@ void CalculatorWindow::aboutDialog() {
 					getLanguageString(SCIENTIFIC_CALCULATOR),
 					ExpressionEstimator::version);
 		} else if (id == CLEAR) {
-			s = getBuildVersionString(true);
+			s = getBuildVersionString(false);
 		} else if (id == RECOUNT) {
 			s = "executable file size "
 					+ toString(getApplicationFileSize(), ',');
