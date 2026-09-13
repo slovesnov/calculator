@@ -486,8 +486,8 @@ void CalculatorWindow::aboutDialog() {
 		id = sid[i];
 		if (id == PROGRAM_VERSION) {
 			s = format(getLanguageString(id),
-					getLanguageString(SCIENTIFIC_CALCULATOR),
-					ExpressionEstimator::version);
+					getLanguageString(SCIENTIFIC_CALCULATOR))+' '+
+					ExpressionEstimator::version;
 		} else if (id == CLEAR) {
 			s = getBuildVersionString(false);
 		} else if (id == RECOUNT) {

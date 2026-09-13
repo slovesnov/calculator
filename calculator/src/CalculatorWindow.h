@@ -8,7 +8,7 @@ static VString languageString[] =
 				"clear buffer", "expression", "result", "common functions",
 				"constants", "trigonometric functions", "hyperbolic function",
 				"rounding and additional functions", "memory", "buffer",
-				"error", "scientific calculator", "program %s version %.2lf",
+				"error", "scientific calculator", "program %s version",
 				"author aleksey slovesnov",
 				"copyright (C/C++/gtk) 2002 - doomsday", "homepage" }, {
 				"очистить", "пересчитать", "копировать в память",
@@ -17,7 +17,7 @@ static VString languageString[] =
 				"гиперболические функции",
 				"дополнительные функции и функции округления", "память",
 				"буфер", "ошибка", "научный калькулятор",
-				"программа %s версия %.2lf", "автор Алексей Словеснов",
+				"программа %s версия", "автор Алексей Словеснов",
 				"copyright (C/C++/gtk) 2002 - второго пришествия",
 				"домашняя страница" }, };
 
