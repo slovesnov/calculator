@@ -214,20 +214,11 @@ CalculatorWindow::CalculatorWindow() {
 	GtkWidget *comboBox;
 	GtkCellRenderer *renderer;
 	gchar c[] = "a=";
+	std::string s;
 
 	//load config
-	m_language = 0;
-	{
-		MapStringString m;
-		MapStringString::iterator it;
-		if (loadConfig(m)) {
-			if ((it = m.find("language")) != m.end()) {
-				if (parseString(it->second, j) && j >= 0 && j < SIZEI(LNG)) {
-					m_language = j;
-				}
-			}
-		}
-	}
+	m_language = getSystemLanguage() == "ru";
+	readConfig(CONFIG_TAGS,s,m_language);
 
 	for (auto &f : m_frame) {
 		f = gtk_frame_new("");
@@ -425,7 +416,7 @@ void CalculatorWindow::addItemToTable(GtkWidget *grid, GtkWidget *w, int column,
 }
 
 CalculatorWindow::~CalculatorWindow() {
-	WRITE_CONFIG(CONFIG_TAGS, ExpressionEstimator::version, m_language);
+	writeConfig(CONFIG_TAGS, ExpressionEstimator::version, m_language);
 }
 
 void CalculatorWindow::updateLanguage() {
