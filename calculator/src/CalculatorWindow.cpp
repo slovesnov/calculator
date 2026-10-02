@@ -106,7 +106,6 @@ void CalculatorWindow::inputChanged() {
 			} else if (s1[i - 2] == '9') {
 				for (p = s1.c_str() + i - 2; *p == '9'; p--)
 					;
-				printl(*p=='.')
 				if (*p == '.') {
 					//originally was pow(sqrt(12), 2)=11.999999999999998 now make s=12
 					//round works correct with negative numbers
