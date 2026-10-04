@@ -236,11 +236,11 @@ CalculatorWindow::CalculatorWindow() {
 	gtk_button_set_image(GTK_BUTTON(b), image("help.png"));
 	g_signal_connect(G_OBJECT(b), "clicked", G_CALLBACK(button_clicked), 0);
 
-	for (i = 0; i < SIZEI(m_label); i++) {
+	for (i = 0; i < std::ssize(m_label); i++) {
 		m_label[i] = gtk_label_new("");
 	}
 
-	for (i = 0; i < SIZEI(m_entry); i++) {
+	for (i = 0; i < std::ssize(m_entry); i++) {
 		if (ENTRY_ENUM_ARRAY[i] == ENTRY_BUFFER) {
 			m_entry[i] = gtk_text_view_new();
 			gtk_text_view_set_editable(GTK_TEXT_VIEW(m_entry[i]), FALSE);
@@ -308,7 +308,7 @@ CalculatorWindow::CalculatorWindow() {
 	grid = gtk_grid_new();
 	gtk_grid_set_column_spacing(GTK_GRID(grid), 3);
 
-	for (k = i = 0; i < SIZEI(m_frame); i++) {
+	for (k = i = 0; i < std::ssize(m_frame); i++) {
 		l = i == 4 ? 5 : i;
 		addItemToTable(grid, m_frame[i], l % 2, l / 2);
 
@@ -399,7 +399,7 @@ GtkTreeModel* CalculatorWindow::createModel() {
 	guint i;
 
 	store = gtk_tree_store_new(2, GDK_TYPE_PIXBUF, G_TYPE_STRING);
-	for (i = 0; i < SIZE(LNG); i++) {
+	for (i = 0; i < std::size(LNG); i++) {
 		pb = pixbuf((LNG[i] + ".gif").c_str());
 		gtk_tree_store_append(store, &iter, NULL);
 		gtk_tree_store_set(store, &iter, PIXBUF_COL, pb, TEXT_COL,
@@ -434,7 +434,7 @@ void CalculatorWindow::updateLanguage() {
 				getLanguageString(STRING_ENUM(i++)));
 	}
 
-	for (i = 0; i < SIZE(m_label); i++) {
+	for (i = 0; i < std::size(m_label); i++) {
 		gtk_label_set_text(GTK_LABEL(m_label[i]), getLanguageString(LABEL[i]));
 	}
 	inputChanged();	//on error text need to redraw

@@ -74,14 +74,14 @@ static VString lexer[] = { { "exp()", "log()", "pow(,)", "sqrt()", "abs()",
 
 class CalculatorWindow {
 	GtkWidget *m_window;
-	GtkWidget *m_frame[SIZE(lexer)];
+	GtkWidget *m_frame[std::size(lexer)];
 	static const int M_BUTTONS_LINE1 = 2;
 	static const int M_BUTTONS_LINE3 = 3;
 	static const int M_BUTTONS_SIZE = M_BUTTONS_LINE1 + M_BUTTONS_LINE3;
 	GtkWidget *m_button[M_BUTTONS_SIZE];
 	GtkWidget *m_aboutButton;
-	GtkWidget *m_label[SIZE(LABEL)];
-	GtkWidget *m_entry[SIZE(ENTRY_ENUM_ARRAY)];
+	GtkWidget *m_label[std::size(LABEL)];
+	GtkWidget *m_entry[std::size(ENTRY_ENUM_ARRAY)];
 	std::vector<GtkWidget*> m_functionButton;
 	int m_language;
 
