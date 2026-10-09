@@ -83,7 +83,7 @@ TestFormWindow::TestFormWindow() {
 	gtk_widget_set_size_request(mbox, 1050, -1);
 	gtk_widget_show_all(m_window);
 	//set dot as decimal separator, standard locale, for output
-	setNumericLocale();
+	setlocale(LC_NUMERIC, "C");
 
 	for (i = 0; i < 2; i++) {
 		recount(i);
